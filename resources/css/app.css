@@ -9,3 +9,14 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+/* INPUT AUTO FILL */
+@layer utilities {
+    input:-webkit-autofill {
+      box-shadow: 0 0 0px 1000px rgba(174, 201, 255, 0.2) inset !important;
+      -webkit-text-fill-color: #ffffff !important; /
+      border-color: #1382be9b !important;
+      border: 2px solid #1382be9b !important;
+      transition: background-color 5000s ease-in-out 0s;
+    }
+  }
