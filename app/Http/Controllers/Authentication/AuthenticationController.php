@@ -49,13 +49,19 @@ class AuthenticationController extends Controller
         ], 200);
     }
 
-    public function logout(Request $request)
+    /**
+     * Handles user logout.
+     *
+     * @param Request $request The incoming HTTP request.
+     * @return \Illuminate\Http\JsonResponse Returns a JSON response confirming logout.
+     */
+    public function logout(Request $request): JsonResponse
     {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return response()->json(['message' => 'Logout realizado com sucesso']);
+        return response()->json(['message' => 'Logout realizado com sucesso'], 200);
     }
 
     /**
