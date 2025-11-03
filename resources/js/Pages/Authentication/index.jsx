@@ -1,5 +1,6 @@
 import api from '@/axios';
 import { route } from 'ziggy-js';
+import { router } from '@inertiajs/react';
 import { useState } from "react";
 import GuestLayout from "@/Components/Layouts/GuestLayout";
 import AuthenticationCard from "@/Pages/Authentication/Partials/AuthenticationCard";
@@ -14,35 +15,29 @@ export default function Authentication() {
         setErrors({});
 
         try {
-            const response = await api.post(route('authentication.login'), {
+            await api.post(route('authentication.login'), {
                 email,
                 password,
             });
 
-            window.location.href = route('home');
-        } catch (error) {
-            if (error.response) {
-                if (error.response.status === 401 || error.response.status === 422) {
-                    setErrors(error.response.data.errors || { general: "Credenciais inválidas" });
-                } else {
-                    console.error("Erro inesperado no login:", error.response);
-                }
-            } else {
-                console.error("Erro de conexão:", error);
-            }
+            // Redireciona para home via Inertia
+            router.visit(route('home'));
+        } catch (err) {
+            if (!err.response) return;
+            setErrors(err.response.data.errors || { general: err.response.data.message });
         }
     };
 
     return (
         <GuestLayout>
-        <AuthenticationCard
-            email={email}
-            setEmail={setEmail}
-            password={password}
-            setPassword={setPassword}
-            errors={errors}
-            onSubmit={handleSubmit}
-        />
+            <AuthenticationCard
+                email={email}
+                setEmail={setEmail}
+                password={password}
+                setPassword={setPassword}
+                errors={errors}
+                onSubmit={handleSubmit}
+            />
         </GuestLayout>
     );
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Authentication;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -20,21 +21,32 @@ class AuthenticationController extends Controller
         return Inertia::render('Authentication');
     }
 
-
-    public function login(Request $request)
+    /**
+     * Handles user login.
+     *
+     * @param Request $request The incoming HTTP request containing email and password.
+     * @return \Illuminate\Http\JsonResponse Returns a JSON response with user data or error messages.
+     */
+    public function login(Request $request): JsonResponse
     {
-        $credentials = $request->validate([
+        $validated = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
 
-        if (!Auth::attempt($credentials)) {
-            return response()->json([], 401);
+        if (!Auth::attempt($validated)) {
+            return response()->json([
+                'message' => 'Credenciais incorretas.',
+            ], 401);
         }
 
+        $request->session()->regenerate();
         $user = Auth::user();
 
-        return response()->json($user, 200);
+        return response()->json([
+            'message' => 'Login realizado com sucesso.',
+            'user' => $user,
+        ], 200);
     }
 
     public function logout(Request $request)

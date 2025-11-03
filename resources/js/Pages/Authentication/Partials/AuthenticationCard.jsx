@@ -18,6 +18,12 @@ export default function AuthenticationCard({
             <Card className="w-full md:w-110 lg:w-150 3xl:w-300 [@media(min-width:2560px)]:w-[60rem] h-full bg-gradient-to-b from-black via-gray-900 to-gray-800 border-1 border-[#1382be9b] shadow-lg text-white flex flex-col items-center ">
                 <Logo className='w-full md:w-60 lg:w-70 [@media(min-width:2560px)]:w-[rem]'/>
 
+                {errors.general && (
+                    <p className="text-red-500 text-sm text-center mb-2">
+                        {errors.general}
+                    </p>
+                )}
+                
                 <form className="w-full space-y-4" onSubmit={onSubmit}>
                     <FormField
                         label="E-MAIL"
