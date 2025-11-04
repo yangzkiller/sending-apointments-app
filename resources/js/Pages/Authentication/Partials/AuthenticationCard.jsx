@@ -3,8 +3,8 @@ import Card from '@/Components/Generals/Card';
 import Logo from '@/Components/Generals/Logo';
 import FormField from '@/Components/Generals/FormField';
 import Button from '@/Components/Generals/Button';
-import ForgotPasswordModal from './ForgotPasswordModal';
-import { Mail, Lock, Loader2 } from 'lucide-react';
+import AuthModal from './AuthModal';
+import { Mail, Lock } from 'lucide-react';
 import { useState } from 'react';
 
 export default function AuthenticationCard({
@@ -28,9 +28,10 @@ export default function AuthenticationCard({
 
     return (
         <>
-            <FadeContent blur={true} duration={2000} easing="ease-out" initialOpacity={0}>
-                <Card className="w-full md:w-110 lg:w-150 3xl:w-300 [@media(min-width:2560px)]:w-[60rem] h-full bg-gradient-to-b from-black via-gray-900 to-gray-800 border-1 border-[#1382be9b] shadow-lg text-white flex flex-col items-center ">
-                    <Logo className='w-full md:w-60 lg:w-70 [@media(min-width:2560px)]:w-[rem]' />
+            {!isForgotPasswordModalOpen && (
+                <FadeContent blur={true} duration={2000} easing="ease-out" initialOpacity={0}>
+                    <Card className="w-full md:w-110 lg:w-150 3xl:w-300 [@media(min-width:2560px)]:w-[60rem] h-full bg-gradient-to-b from-black via-gray-900 to-gray-800 border-1 border-[#1382be9b] shadow-lg text-white flex flex-col items-center ">
+                        <Logo className='w-full md:w-60 lg:w-70 [@media(min-width:2560px)]:w-[rem]' />
 
                     {errors.general && (
                         <p className="text-red-500 text-sm text-center mb-2">
@@ -80,15 +81,16 @@ export default function AuthenticationCard({
                         <button 
                             type="button"
                             onClick={openForgotPasswordModal}
-                            className="hover:underline"
+                            className="hover:underline cursor-pointer"
                         >
                             Esqueci Minha Senha
                         </button>
                     </div>
                 </Card>
             </FadeContent>
+            )}
 
-            <ForgotPasswordModal 
+            <AuthModal 
                 isOpen={isForgotPasswordModalOpen}
                 onClose={closeForgotPasswordModal}
             />
