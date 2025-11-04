@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { route } from "ziggy-js";
+import { toast } from "react-toastify";
 import api from "@/axios";
 import FormField from "@/Components/Generals/FormField";
 import Button from "@/Components/Generals/Button";
@@ -73,7 +74,7 @@ export default function ForgotPasswordModal({ isOpen, onClose }) {
                 password_confirmation: passwordConfirmation,
             });
 
-            alert("Senha redefinida com sucesso! Você já pode fazer login.");
+            toast.success("Senha redefinida com sucesso! Você já pode fazer login.");
             resetModal();
         } catch (err) {
             if (err.response) {
