@@ -4,7 +4,7 @@ import Logo from '@/Components/Generals/Logo';
 import FormField from '@/Components/Generals/FormField';
 import Button from '@/Components/Generals/Button';
 import ForgotPasswordModal from '@/Pages/Authentication/Partials/ForgotPasswordModal';
-import { Mail, Lock } from 'lucide-react';
+import { Mail, Lock, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 
 export default function AuthenticationCard({
