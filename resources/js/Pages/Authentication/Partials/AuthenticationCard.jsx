@@ -3,7 +3,7 @@ import Card from '@/Components/Generals/Card';
 import Logo from '@/Components/Generals/Logo';
 import FormField from '@/Components/Generals/FormField';
 import Button from '@/Components/Generals/Button';
-import AuthModal from './AuthModal';
+import ForgotPasswordModal from '@/Pages/Authentication/Partials/ForgotPasswordModal';
 import { Mail, Lock } from 'lucide-react';
 import { useState } from 'react';
 
@@ -78,7 +78,7 @@ export default function AuthenticationCard({
                     </form>
 
                     <div className="w-full flex justify-between mt-5 text-sm text-[#1383be]">
-                        <button 
+                        <button
                             type="button"
                             onClick={openForgotPasswordModal}
                             className="hover:underline cursor-pointer"
@@ -90,7 +90,7 @@ export default function AuthenticationCard({
             </FadeContent>
             )}
 
-            <AuthModal 
+            <ForgotPasswordModal
                 isOpen={isForgotPasswordModalOpen}
                 onClose={closeForgotPasswordModal}
             />

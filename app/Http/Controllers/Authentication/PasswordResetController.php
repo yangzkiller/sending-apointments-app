@@ -28,14 +28,9 @@ class PasswordResetController extends Controller
         ]);
 
         $email = $validated['email'];
-
-        // Check if user exists, but don't reveal this information for security
         $user = User::where('email', $email)->first();
-        
-        // Always proceed to avoid revealing if email exists in the system
-        // Only send actual email if user exists
+
         if ($user) {
-            // Check rate limiting for existing users
             $attempts = DB::table('password_reset_tokens')
                 ->where('email', $email)
                 ->where('created_at', '>=', Carbon::now()->subMinutes(15))
@@ -50,10 +45,8 @@ class PasswordResetController extends Controller
 
             $code = $this->generateSixDigitCode();
 
-            // Clean old tokens
             DB::table('password_reset_tokens')->where('email', $email)->delete();
 
-            // Store new token
             DB::table('password_reset_tokens')->insert([
                 'email' => $email,
                 'token' => Hash::make($code),
@@ -76,13 +69,12 @@ class PasswordResetController extends Controller
             }
         }
 
-        // Always return success for security reasons
         return response()->json([
             'status' => 'success',
             'message' => 'Se o email fornecido for válido, você receberá um código de recuperação.'
         ], 200);
     }
-    
+
     /**
      * Validates the provided password reset code.
      *
@@ -99,10 +91,8 @@ class PasswordResetController extends Controller
         $email = $validated['email'];
         $code = $validated['code'];
 
-        // Find the reset token in database
         $resetToken = DB::table('password_reset_tokens')->where('email', $email)->first();
 
-        // Validate if token exists and code matches
         if (!$resetToken || !Hash::check($code, $resetToken->token)) {
             return response()->json([
                 'status' => 'error',
@@ -110,7 +100,6 @@ class PasswordResetController extends Controller
             ], 422);
         }
 
-        // Check if token has expired (15 minutes)
         $tokenAge = Carbon::parse($resetToken->created_at)->diffInMinutes(Carbon::now());
         if ($tokenAge > 15) {
             DB::table('password_reset_tokens')->where('email', $email)->delete();
@@ -120,7 +109,6 @@ class PasswordResetController extends Controller
             ], 422);
         }
 
-        // Clean up the token after successful validation
         DB::table('password_reset_tokens')->where('email', $email)->delete();
 
         return response()->json([
@@ -128,7 +116,7 @@ class PasswordResetController extends Controller
             'message' => 'Código válido! Você pode redefinir sua senha.'
         ], 200);
     }
-    
+
     /**
      * Resets the user's password and logs the action.
      *
@@ -144,7 +132,6 @@ class PasswordResetController extends Controller
 
         $email = $validated['email'];
 
-        // Find the user
         $user = User::where('email', $email)->first();
         if (!$user) {
             return response()->json([
@@ -153,10 +140,8 @@ class PasswordResetController extends Controller
             ], 404);
         }
 
-        // Update the user's password
         $user->update(['password' => Hash::make($validated['password'])]);
 
-        // Log the password reset action
         Log::create([
             'action' => 'reset_password',
             'description' => "Usuário {$user->name} ({$user->email}) redefiniu sua senha via recuperação de senha.",
