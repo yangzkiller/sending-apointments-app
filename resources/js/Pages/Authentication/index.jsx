@@ -9,10 +9,12 @@ export default function Authentication() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errors, setErrors] = useState({});
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setErrors({});
+        setLoading(true);
 
         try {
             await api.post(route('authentication.login'), {
@@ -20,11 +22,15 @@ export default function Authentication() {
                 password,
             });
 
-            // Redireciona para home via Inertia
-            router.visit(route('home'));
+            setTimeout(() => {
+                router.visit(route('home'));
+            }, 1000);
+
         } catch (err) {
-            if (!err.response) return;
-            setErrors(err.response.data.errors || { general: err.response.data.message });
+            if (err.response) {
+                setErrors(err.response.data.errors || { general: err.response.data.message });
+            }
+            setLoading(false);
         }
     };
 
@@ -37,6 +43,7 @@ export default function Authentication() {
                 setPassword={setPassword}
                 errors={errors}
                 onSubmit={handleSubmit}
+                loading={loading}
             />
         </GuestLayout>
     );
