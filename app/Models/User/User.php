@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\General\Log;
 use App\Models\Spreadsheet\Spreadsheet;
+use App\Models\Institution\Institution;
 
 class User extends Authenticatable
 {
@@ -52,5 +53,13 @@ class User extends Authenticatable
     public function spreadsheets()
     {
         return $this->hasMany(Spreadsheet::class, 'id_user');
+    }
+
+    /**
+     * A user belongs to an institution.
+     */
+    public function institution()
+    {
+        return $this->belongsTo(Institution::class, 'id_institution');
     }
 }

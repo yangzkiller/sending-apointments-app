@@ -23,7 +23,7 @@ export default function UploadSpreadsheetCard({ onUpload }) {
     };
 
     return (
-        <Card className="bg-gray-800 text-white border border-gray-700 hover:shadow-xl transition-all">
+        <Card className="bg-gray-800 text-white border border-[#1382be9b] hover:shadow-xl transition-all">
             <div className="mb-4">
                 <div className="flex items-center gap-2 mb-2">
                     <FileUp size={22} className="text-[#13a3f1]" />
