@@ -18,6 +18,7 @@
         "@inertiajs/core": "^2.2.15",
         "@inertiajs/react": "^2.2.14",
         "@vitejs/plugin-react": "^5.1.0",
+        "framer-motion": "^12.23.24",
         "lucide-react": "^0.548.0",
         "ogl": "^1.0.11",
         "react": "^19.2.0",

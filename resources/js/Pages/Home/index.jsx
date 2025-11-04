@@ -1,44 +1,36 @@
-import { usePage, router } from '@inertiajs/react';
-import api from '@/axios';
-import { route } from 'ziggy-js';
-import { useState } from 'react';
+import api from "@/axios";
+import { usePage, router } from "@inertiajs/react";
+import { route } from "ziggy-js";
+import AuthenticationLayout from "@/Components/Layouts/AuthenticationLayout";
+import SenderHome from "@/Pages/Home/Partials/SenderHome";
 
 export default function Home() {
     const { auth } = usePage().props;
-    const [loading, setLoading] = useState(false);
-
-    if (!auth.user) {
-        return <p>Loading user...</p>;
-    }
 
     const handleLogout = async () => {
-        setLoading(true);
         try {
-            await api.post(route('authentication.logout'));
-
-            router.visit(route('authentication.index'));
+            await api.post(route("authentication.logout"));
+            router.visit(route("authentication.index"));
         } catch (err) {
-            console.error('Logout failed:', err);
-        } finally {
-            setLoading(false);
+            console.error("Logout failed:", err);
         }
     };
 
+    const handleChangePassword = () => {
+        console.log("Abrir modal de mudar senha");
+    };
+
     return (
-        <div className="p-6">
-            <h1 className="text-2xl font-bold mb-4">Welcome, {auth.user.name}!</h1>
-
-            {auth.user.role === 'admin' && <p>Admin area</p>}
-            {auth.user.role === 'sender' && <p>Sender area</p>}
-            {auth.user.role === 'receiver' && <p>Receiver area</p>}
-
-            <button
-                onClick={handleLogout}
-                disabled={loading}
-                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 mt-4"
-            >
-                {loading ? 'Logging out...' : 'Logout'}
-            </button>
-        </div>
+        <AuthenticationLayout
+            user={auth.user}
+            onLogout={handleLogout}
+            onChangePassword={handleChangePassword}
+        >
+            <div className="mt-24 px-6 w-full max-w-5xl mx-auto space-y-6">
+                {auth.user.role === 0 && <SenderHome />}
+                {auth.user.role === "admin" && <p>Admin area</p>}
+                {auth.user.role === "receiver" && <p>Receiver area</p>}
+            </div>
+        </AuthenticationLayout>
     );
 }
