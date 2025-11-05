@@ -17,15 +17,16 @@ export default function Authentication() {
         setLoading(true);
 
         try {
-            await api.post(route('authentication.login'), {
-                email,
-                password,
-            });
+            await api.post(route('authentication.login'), { email, password });
+
+            sessionStorage.setItem('justLoggedIn', '1');
 
             setTimeout(() => {
-                router.visit(route('home'));
+                router.visit(route('home'), {
+                    method: 'get',
+                    preserveState: false,
+                });
             }, 1000);
-
         } catch (err) {
             if (err.response) {
                 setErrors(err.response.data.errors || { general: err.response.data.message });

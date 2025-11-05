@@ -9,11 +9,16 @@ import SenderHome from "@/Pages/Home/Partials/SenderHome";
 export default function Home() {
     const { auth } = usePage().props;
 
+    const justLoggedIn = new URLSearchParams(window.location.search).get("justLoggedIn");
+
     useEffect(() => {
-        if (auth?.user?.name) {
+        const justLoggedIn = sessionStorage.getItem('justLoggedIn');
+
+        if (justLoggedIn && auth?.user?.name) {
             toast.success(`Seja bem-vindo, ${auth.user.name}!`);
+            sessionStorage.removeItem('justLoggedIn'); 
         }
-    }, [auth?.user?.id]);
+    }, [auth?.user?.name]);
 
     const handleLogout = async () => {
         try {
