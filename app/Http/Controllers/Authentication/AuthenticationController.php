@@ -41,6 +41,9 @@ class AuthenticationController extends Controller
         }
 
         $request->session()->regenerate();
+
+        Auth::logoutOtherDevices($request->password);
+
         $user = Auth::user();
 
         return response()->json([
