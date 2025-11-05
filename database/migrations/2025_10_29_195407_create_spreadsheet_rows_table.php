@@ -18,9 +18,11 @@ return new class extends Migration
             $table->string('ddi')->default('55');
             $table->string('ddd', 2);
             $table->string('phone', 9);
-            $table->string('specialiaty');
+            $table->string('speciality');
             $table->string('institution');
             $table->string('address');
+            $table->date('date');
+            $table->time('hour');
             $table->string('identifier');
             $table->timestamps();
         });
