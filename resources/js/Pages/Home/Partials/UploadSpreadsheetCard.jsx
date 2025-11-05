@@ -2,57 +2,17 @@ import Card from "@/Components/Generals/Card";
 import Button from "@/Components/Generals/Button";
 import { FileUp, Loader2 } from "lucide-react";
 import { useState } from "react";
-import * as XLSX from "xlsx";
-import { toast } from "react-toastify";
-import api from "@/axios";
 
-export default function UploadSpreadsheetCard({ onUpload }) {
+export default function UploadSpreadsheetCard({ onUpload, loading, lastImport }) {
     const [file, setFile] = useState(null);
-    const [loading, setLoading] = useState(false);
 
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
         setFile(selectedFile);
     };
 
-    const handleUpload = async () => {
-        if (!file) {
-            toast.warning("Selecione um arquivo antes de enviar.");
-            return;
-        }
-
-        try {
-            setLoading(true);
-
-            const data = await file.arrayBuffer();
-            const workbook = XLSX.read(data, { type: "array" });
-            const sheetName = workbook.SheetNames[0];
-            const sheet = workbook.Sheets[sheetName];
-
-            const json = XLSX.utils.sheet_to_json(sheet, { defval: "" });
-
-            const response = await api.post(route('spreadsheet.import'), {
-                rows: json,
-                file_name: file.name,
-            });
-
-            const { valid_rows, total_received } = response.data;
-
-            toast.success(
-                `Importação concluída! ${valid_rows} de ${total_received} linhas foram inseridas com sucesso.`
-            );
-
-            setFile(null);
-            onUpload?.(file);
-        } catch (err) {
-            if (err.response && err.response.data?.message) {
-                toast.error(err.response.data.message);
-            } else {
-                toast.error("Erro ao processar a planilha.");
-            }
-        } finally {
-            setLoading(false);
-        }
+    const handleClick = () => {
+        if (file) onUpload(file);
     };
 
     return (
@@ -85,8 +45,8 @@ export default function UploadSpreadsheetCard({ onUpload }) {
 
                 <div className="flex justify-center mt-6">
                     <Button
-                        onClick={handleUpload}
-                        disabled={loading}
+                        onClick={handleClick}
+                        disabled={loading || !file}
                         className="w-auto flex items-center justify-center gap-2 px-8"
                     >
                         {loading ? (
@@ -101,6 +61,23 @@ export default function UploadSpreadsheetCard({ onUpload }) {
                             </>
                         )}
                     </Button>
+                </div>
+
+                <div className="mt-5 text-center text-gray-500">
+                    {lastImport ? (
+                        <>
+                            <h1>
+                                Último envio realizado:{" "}
+                                {lastImport.date} às {lastImport.time}
+                            </h1>
+                            <h1>
+                                Responsável pelo envio:{" "}
+                                <strong>{lastImport.responsible}</strong>
+                            </h1>
+                        </>
+                    ) : (
+                        <h1>Nenhum envio registrado ainda.</h1>
+                    )}
                 </div>
             </div>
         </Card>

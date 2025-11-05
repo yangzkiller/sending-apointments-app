@@ -12,7 +12,7 @@ export default function Navbar({ user, onLogout, onChangePassword }) {
 
     return (
         <nav className="w-full bg-gradient-to-r from-black via-gray-900 to-gray-800 border-b-2 border-[#1382be9b] text-white shadow-md fixed top-0 left-0 z-50 py-2">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-7xl xl:max-w-full mx-auto px-4 sm:px-6 lg:px-8 xl:px-20">
                 <div className="flex justify-between items-center h-16">
                     <div className="flex items-center">
                         <Logo className="w-28 md:w-36 cursor-pointer" />

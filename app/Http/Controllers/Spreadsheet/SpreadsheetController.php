@@ -14,6 +14,37 @@ use Illuminate\Http\JsonResponse;
 class SpreadsheetController extends Controller
 {
     /**
+     * Get the last spreadsheet import made by any user
+     * from the same institution as the authenticated user.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function lastImport(): JsonResponse
+    {
+        $user = Auth::user();
+
+        $lastImport = Spreadsheet::with('user')
+            ->where('id_institution', $user->id_institution)
+            ->orderBy('id', 'desc')
+            ->first();
+
+        if (!$lastImport) {
+            return response()->json([
+                'data' => null,
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'Última importação encontrada.',
+            'data' => [
+                'responsible' => $lastImport->user->name ?? 'Desconhecido',
+                'date' => Carbon::parse($lastImport->created_at)->format('d/m/Y'),
+                'time' => Carbon::parse($lastImport->created_at)->format('H:i'),
+            ],
+        ], 200);
+    }
+
+    /**
      * Store imported spreadsheet data.
      *
      * Validates the uploaded file, checks for empty rows,
@@ -161,7 +192,7 @@ class SpreadsheetController extends Controller
             'spreadsheet_id' => $spreadsheet->id,
             'valid_rows' => count($validRows),
             'total_received' => count($rows),
-        ], 201);
+        ], 200);
     }
 
     /**
