@@ -3,9 +3,10 @@ import { useState,useEffect } from "react";
 import { usePage, router } from "@inertiajs/react";
 import { route } from "ziggy-js";
 import { toast } from "react-toastify";
-import AuthenticationLayout from "@/Components/Layouts/AuthenticationLayout";
 import SenderHome from "@/Pages/Home/Partials/SenderHome";
-import ChangePasswordModal from "@/Pages/Authentication/Partials/ChangePasswordModal";
+import ReceiverHome from "@/Pages/Home/Partials/ReceiverHome";
+import AuthenticationLayout from "@/Components/Layouts/AuthenticationLayout";
+import ChangePasswordModal from "@/Pages/Home/Partials/ChangePasswordModal";
 
 export default function Home() {
     const { auth } = usePage().props;
@@ -47,8 +48,8 @@ export default function Home() {
         >
             <div className="mt-24 px-6 w-full max-w-5xl mx-auto space-y-6">
                 {auth.user.role === 0 && <SenderHome />}
+                {auth.user.role === 1 && <ReceiverHome />}
                 {auth.user.role === "admin" && <p>Admin area</p>}
-                {auth.user.role === "receiver" && <p>Receiver area</p>}
             </div>
 
             <ChangePasswordModal

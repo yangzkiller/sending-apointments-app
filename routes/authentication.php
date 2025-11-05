@@ -11,10 +11,10 @@ Route::prefix('authentication')->name('authentication.')->group(function () {
     Route::prefix('forgot-password')->name('forgot-password.')->middleware('guest')->group(function () {
         Route::post('/send-code', [PasswordResetController::class, 'sendCode'])
             ->name('send-code');
-        
+
         Route::post('/validate-code', [PasswordResetController::class, 'validateCode'])
             ->name('validate-code');
-        
+
         Route::post('/reset', [PasswordResetController::class, 'resetPassword'])
             ->name('reset');
     });
