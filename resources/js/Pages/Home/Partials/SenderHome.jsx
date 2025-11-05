@@ -4,7 +4,6 @@ import { route } from "ziggy-js";
 import * as XLSX from "xlsx";
 import { toast } from "react-toastify";
 import api from "@/axios";
-
 import DownloadTemplateCard from "@/Pages/Home/Partials/DownloadTemplateCard";
 import UploadSpreadsheetCard from "@/Pages/Home/Partials/UploadSpreadsheetCard";
 

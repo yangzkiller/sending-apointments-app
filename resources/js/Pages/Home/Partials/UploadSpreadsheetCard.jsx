@@ -12,7 +12,10 @@ export default function UploadSpreadsheetCard({ onUpload, loading, lastImport })
     };
 
     const handleClick = () => {
-        if (file) onUpload(file);
+        if (file) {
+            onUpload(file);
+            setFile(null);
+        }
     };
 
     return (
