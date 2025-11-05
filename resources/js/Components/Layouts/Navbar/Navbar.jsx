@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Home } from "lucide-react";
 import { Link } from "@inertiajs/react";
 import { route } from "ziggy-js";
 import Logo from "@/Components/Generals/Logo";
@@ -21,12 +21,13 @@ export default function Navbar({ user, onLogout, onChangePassword }) {
                     <div className="hidden md:flex items-center space-x-6">
                     <Link
                         href={route("home")}
-                        className={`text-sm font-medium transition-all duration-200 transform ${
+                        className={`flex items-center gap-2 text-sm font-medium transition-all duration-200 transform ${
                             isActive("home")
                                 ? "text-[#13a3f1] scale-110"
                                 : "text-gray-300 hover:text-white hover:scale-105"
                         }`}
                     >
+                        <Home className="w-4 h-4" /> {/* 👈 ícone do lado esquerdo */}
                         HOME
                     </Link>
                     </div>
