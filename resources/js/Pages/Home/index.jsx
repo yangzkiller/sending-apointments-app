@@ -1,11 +1,14 @@
+import { useState } from "react";
 import api from "@/axios";
 import { usePage, router } from "@inertiajs/react";
 import { route } from "ziggy-js";
 import AuthenticationLayout from "@/Components/Layouts/AuthenticationLayout";
 import SenderHome from "@/Pages/Home/Partials/SenderHome";
+import ChangePasswordModal from "@/Pages/Authentication/Partials/ChangePasswordModal";
 
 export default function Home() {
     const { auth } = usePage().props;
+    const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] = useState(false);
 
     const handleLogout = async () => {
         try {
@@ -17,7 +20,11 @@ export default function Home() {
     };
 
     const handleChangePassword = () => {
-        console.log("Abrir modal de mudar senha");
+        setIsChangePasswordModalOpen(true);
+    };
+
+    const closeChangePasswordModal = () => {
+        setIsChangePasswordModalOpen(false);
     };
 
     return (
@@ -31,6 +38,12 @@ export default function Home() {
                 {auth.user.role === "admin" && <p>Admin area</p>}
                 {auth.user.role === "receiver" && <p>Receiver area</p>}
             </div>
+
+            <ChangePasswordModal
+                isOpen={isChangePasswordModalOpen}
+                onClose={closeChangePasswordModal}
+            />
         </AuthenticationLayout>
     );
 }
+
