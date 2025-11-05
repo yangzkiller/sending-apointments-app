@@ -4,7 +4,7 @@ import Button from "@/Components/Generals/Button";
 
 export default function DownloadTemplateCard({ onDownload }) {
     return (
-        <Card className="bg-gray-800 text-white border border-gray-700 hover:shadow-xl transition-all">
+        <Card className="bg-gray-800 text-white border border-[#1382be9b] hover:shadow-xl transition-all">
             <div className="mb-2">
                 <div className="flex items-center gap-2 mb-2">
                     <FileSpreadsheet size={22} className="text-[#13a3f1]" />
@@ -28,6 +28,9 @@ export default function DownloadTemplateCard({ onDownload }) {
                     </li>
                     <li>
                         Mantenha o <strong>formato original</strong> para garantir uma importação correta.
+                    </li>
+                    <li>
+                        Envie o aquivo <strong>modelo</strong> para garantir uma importação correta.
                     </li>
                 </ul>
 

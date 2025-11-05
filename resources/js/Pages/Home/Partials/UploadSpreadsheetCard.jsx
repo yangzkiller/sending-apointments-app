@@ -1,29 +1,25 @@
 import Card from "@/Components/Generals/Card";
 import Button from "@/Components/Generals/Button";
-import { FileUp } from "lucide-react";
+import { FileUp, Loader2 } from "lucide-react";
 import { useState } from "react";
 
-export default function UploadSpreadsheetCard({ onUpload }) {
+export default function UploadSpreadsheetCard({ onUpload, loading, lastImport }) {
     const [file, setFile] = useState(null);
 
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
         setFile(selectedFile);
-        console.log("Arquivo selecionado:", selectedFile);
     };
 
-    const handleUpload = () => {
-        if (!file) {
-            alert("Selecione um arquivo antes de enviar.");
-            return;
+    const handleClick = () => {
+        if (file) {
+            onUpload(file);
+            setFile(null);
         }
-
-        console.log("Enviando planilha:", file);
-        onUpload?.(file);
     };
 
     return (
-        <Card className="bg-gray-800 text-white border border-gray-700 hover:shadow-xl transition-all">
+        <Card className="bg-gray-800 text-white border border-[#1382be9b] hover:shadow-xl transition-all">
             <div className="mb-4">
                 <div className="flex items-center gap-2 mb-2">
                     <FileUp size={22} className="text-[#13a3f1]" />
@@ -34,17 +30,15 @@ export default function UploadSpreadsheetCard({ onUpload }) {
                     Faça o upload da planilha preenchida com os dados dos colaboradores.
                 </p>
 
-                <label className="block">
-                    <input
-                        type="file"
-                        accept=".xlsx"
-                        onChange={handleFileChange}
-                        className="w-full text-sm text-gray-300 border border-gray-600 rounded-lg cursor-pointer bg-gray-900
-                                   file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0
-                                   file:text-sm file:font-semibold file:bg-[#1383be] file:text-white
-                                   hover:file:bg-[#0f6fa3]"
-                    />
-                </label>
+                <input
+                    type="file"
+                    accept=".xlsx"
+                    onChange={handleFileChange}
+                    className="w-full text-sm text-gray-300 border border-gray-600 rounded-lg cursor-pointer bg-gray-900
+                               file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0
+                               file:text-sm file:font-semibold file:bg-[#1383be] file:text-white
+                               hover:file:bg-[#0f6fa3]"
+                />
 
                 {file && (
                     <p className="mt-2 text-xs text-gray-400 text-center">
@@ -54,12 +48,39 @@ export default function UploadSpreadsheetCard({ onUpload }) {
 
                 <div className="flex justify-center mt-6">
                     <Button
-                        onClick={handleUpload}
+                        onClick={handleClick}
+                        disabled={loading || !file}
                         className="w-auto flex items-center justify-center gap-2 px-8"
                     >
-                        <FileUp size={18} />
-                        Enviar planilha
+                        {loading ? (
+                            <>
+                                <Loader2 className="w-5 h-5 animate-spin" />
+                                Enviando...
+                            </>
+                        ) : (
+                            <>
+                                <FileUp size={18} />
+                                Enviar planilha
+                            </>
+                        )}
                     </Button>
+                </div>
+
+                <div className="mt-5 text-center text-gray-500">
+                    {lastImport ? (
+                        <>
+                            <h1>
+                                Último envio realizado:{" "}
+                                {lastImport.date} às {lastImport.time}
+                            </h1>
+                            <h1>
+                                Responsável pelo envio:{" "}
+                                <strong>{lastImport.responsible}</strong>
+                            </h1>
+                        </>
+                    ) : (
+                        <h1>Nenhum envio registrado ainda.</h1>
+                    )}
                 </div>
             </div>
         </Card>

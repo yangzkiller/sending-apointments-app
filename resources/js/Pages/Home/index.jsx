@@ -1,7 +1,10 @@
-import { useState } from "react";
 import api from "@/axios";
+import { useState,useEffect } from "react";
+
 import { usePage, router } from "@inertiajs/react";
 import { route } from "ziggy-js";
+import { toast } from "react-toastify";
+import api from "@/axios";
 import AuthenticationLayout from "@/Components/Layouts/AuthenticationLayout";
 import SenderHome from "@/Pages/Home/Partials/SenderHome";
 import ChangePasswordModal from "@/Pages/Authentication/Partials/ChangePasswordModal";
@@ -9,13 +12,24 @@ import ChangePasswordModal from "@/Pages/Authentication/Partials/ChangePasswordM
 export default function Home() {
     const { auth } = usePage().props;
     const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] = useState(false);
+    
+    useEffect(() => {
+        const justLoggedIn = sessionStorage.getItem('justLoggedIn');
+
+        if (justLoggedIn && auth?.user?.name) {
+            toast.success(`Seja bem-vindo, ${auth.user.name}!`);
+            sessionStorage.removeItem('justLoggedIn');
+        }
+    }, [auth?.user?.name]);
 
     const handleLogout = async () => {
         try {
             await api.post(route("authentication.logout"));
-            router.visit(route("authentication.index"));
+            toast.info(`Até breve, ${auth.user.name}!`);
+            setTimeout(() => router.visit(route("authentication.index")), 1500);
         } catch (err) {
             console.error("Logout failed:", err);
+            toast.error("Erro ao sair. Tente novamente.");
         }
     };
 

@@ -15,7 +15,6 @@ class Spreadsheet extends Model
     protected $table = 'spreadsheets';
 
     protected $fillable = [
-        'name',
         'rows',
         'status',
         'id_institution',

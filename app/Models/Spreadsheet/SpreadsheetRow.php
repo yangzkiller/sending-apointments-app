@@ -17,7 +17,7 @@ class SpreadsheetRow extends Model
         'ddi',
         'ddd',
         'phone',
-        'specialty',
+        'speciality',
         'institution',
         'address',
         'identifier',
