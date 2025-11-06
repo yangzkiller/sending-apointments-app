@@ -1,7 +1,8 @@
+import { useState } from "react";
+import { FileUp, Loader2 } from "lucide-react";
 import Card from "@/Components/Generals/Card";
 import Button from "@/Components/Generals/Button";
-import { FileUp, Loader2 } from "lucide-react";
-import { useState } from "react";
+import { toast } from "react-toastify";
 
 export default function UploadSpreadsheetCard({ onUpload, loading, lastImport }) {
     const [file, setFile] = useState(null);
@@ -12,10 +13,11 @@ export default function UploadSpreadsheetCard({ onUpload, loading, lastImport })
     };
 
     const handleClick = () => {
-        if (file) {
-            onUpload(file);
-            setFile(null);
+        if (!file) {
+            toast.error("Por favor, selecione um arquivo .xlsx antes de enviar.");
         }
+        onUpload(file);
+        setFile(null);
     };
 
     return (

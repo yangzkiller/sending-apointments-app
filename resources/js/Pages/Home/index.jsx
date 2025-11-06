@@ -3,8 +3,8 @@ import { useState,useEffect } from "react";
 import { usePage, router } from "@inertiajs/react";
 import { route } from "ziggy-js";
 import { toast } from "react-toastify";
-import SenderHome from "@/Pages/Home/Partials/SenderHome";
-import ReceiverHome from "@/Pages/Home/Partials/ReceiverHome";
+import SenderHome from "@/Pages/Home/Partials/Homes/SenderHome";
+import ReceiverHome from "@/Pages/Home/Partials/Homes/ReceiverHome";
 import AuthenticationLayout from "@/Components/Layouts/AuthenticationLayout";
 import ChangePasswordModal from "@/Pages/Home/Partials/ChangePasswordModal";
 

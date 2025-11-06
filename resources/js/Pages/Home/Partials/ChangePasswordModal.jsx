@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { route } from "ziggy-js";
 import { toast } from "react-toastify";
+import { Lock } from "lucide-react";
 import api from "@/axios";
 import FormField from "@/Components/Generals/FormField";
 import Button from "@/Components/Generals/Button";
 import Modal from "@/Components/Generals/Modal";
-import { Lock } from "lucide-react";
 
 export default function ChangePasswordModal({ isOpen, onClose }) {
     const [loading, setLoading] = useState(false);

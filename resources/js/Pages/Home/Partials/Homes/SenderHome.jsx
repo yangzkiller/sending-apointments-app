@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { usePage } from "@inertiajs/react";
 import { route } from "ziggy-js";
-import * as XLSX from "xlsx";
 import { toast } from "react-toastify";
+import * as XLSX from "xlsx";
 import api from "@/axios";
-import DownloadTemplateCard from "@/Pages/Home/Partials/DownloadTemplateCard";
-import UploadSpreadsheetCard from "@/Pages/Home/Partials/UploadSpreadsheetCard";
+import DownloadTemplateCard from "@/Pages/Home/Partials/Cards/DownloadTemplateCard";
+import UploadSpreadsheetCard from "@/Pages/Home/Partials/Cards/UploadSpreadsheetCard";
 
 export default function SenderHome() {
     const { auth } = usePage().props;

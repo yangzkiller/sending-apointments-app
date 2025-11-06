@@ -1,7 +1,7 @@
-import api from '@/axios';
 import { route } from 'ziggy-js';
 import { router } from '@inertiajs/react';
 import { useState } from "react";
+import api from '@/axios';
 import GuestLayout from "@/Components/Layouts/GuestLayout";
 import AuthenticationCard from "@/Pages/Authentication/Partials/AuthenticationCard";
 

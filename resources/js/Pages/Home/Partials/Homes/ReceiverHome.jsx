@@ -1,6 +1,6 @@
-import api from "@/axios";
 import { usePage } from "@inertiajs/react";
 import { route } from "ziggy-js";
+import api from "@/axios";
 import InstitutionsList from "@/Pages/Home/Partials/InstitutionsList";
 
 export default function ReceiverHome() {
