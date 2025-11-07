@@ -40,8 +40,17 @@ class AuthenticationController extends Controller
             ], 401);
         }
 
-        $request->session()->regenerate();
         $user = Auth::user();
+
+        // Check if user is active
+        if (!$user->active) {
+            Auth::logout();
+            return response()->json([
+                'message' => 'Sua conta está inativa. Entre em contato com o administrador.',
+            ], 403);
+        }
+
+        $request->session()->regenerate();
 
         return response()->json([
             'message' => 'Login realizado com sucesso.',

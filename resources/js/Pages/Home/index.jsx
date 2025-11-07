@@ -5,6 +5,7 @@ import { route } from "ziggy-js";
 import { toast } from "react-toastify";
 import AuthenticationLayout from "@/Components/Layouts/AuthenticationLayout";
 import SenderHome from "@/Pages/Home/Partials/SenderHome";
+import AdminHome from "@/Pages/Home/Partials/AdminHome";
 import ChangePasswordModal from "@/Pages/Authentication/Partials/ChangePasswordModal";
 
 export default function Home() {
@@ -47,8 +48,12 @@ export default function Home() {
         >
             <div className="mt-24 px-6 w-full max-w-5xl mx-auto space-y-6">
                 {auth.user.role === 0 && <SenderHome />}
-                {auth.user.role === "admin" && <p>Admin area</p>}
-                {auth.user.role === "receiver" && <p>Receiver area</p>}
+                {auth.user.role === 2 && <AdminHome />}
+                {auth.user.role === 1 && (
+                    <div className="text-center py-12">
+                        <p className="text-gray-600 text-lg">Área do Destinatário - Em desenvolvimento</p>
+                    </div>
+                )}
             </div>
 
             <ChangePasswordModal

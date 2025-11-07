@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\General\Log;
+use App\Models\User\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -45,6 +46,92 @@ class UserController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Senha alterada com sucesso!'
+        ], 200);
+    }
+
+    /**
+     * List all users for admin panel.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function index(): JsonResponse
+    {
+        $users = User::with('institution')
+            ->orderBy('name')
+            ->get()
+            ->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $user->role,
+                    'active' => $user->active,
+                    'institution' => $user->institution ? [
+                        'id' => $user->institution->id,
+                        'name' => $user->institution->name,
+                    ] : null,
+                    'created_at' => $user->created_at->format('d/m/Y H:i'),
+                ];
+            });
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $users
+        ], 200);
+    }
+
+    /**
+     * Update a user's information.
+     *
+     * @param Request $request
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function update(Request $request, int $id): JsonResponse
+    {
+        $user = User::findOrFail($id);
+
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $id],
+            'password' => ['nullable', 'string', 'min:8'],
+            'role' => ['required', 'integer', 'in:0,1,2'],
+            'active' => ['required', 'boolean'],
+            'id_institution' => ['nullable', 'exists:institutions,id'],
+        ]);
+
+        // Prepare data for update
+        $dataToUpdate = [
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'role' => $validated['role'],
+            'active' => $validated['active'],
+            'id_institution' => $validated['id_institution'],
+        ];
+
+        // Only update password if provided
+        if (!empty($validated['password'])) {
+            $dataToUpdate['password'] = Hash::make($validated['password']);
+        }
+
+        $user->update($dataToUpdate);
+
+        Log::create([
+            'action' => 'update_user',
+            'description' => "Admin atualizou dados do usuário {$user->name} (ID: {$user->id}).",
+            'id_user' => $request->user()->id,
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Usuário atualizado com sucesso!',
+            'data' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->role,
+                'active' => $user->active,
+            ]
         ], 200);
     }
 }

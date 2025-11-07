@@ -13,7 +13,7 @@ export default function AuthenticationLayout({ children, user, onLogout, onChang
                 {children}
             </main>
 
-            <footer className="relative z-10 mb-4 text-gray-400 text-sm text-center">
+            <footer className="relative z-0 mb-4 text-gray-400 text-sm text-center">
                 © {new Date().getFullYear()} Grupo ASAS. Todos os direitos reservados.
             </footer>
         </LayoutContent>

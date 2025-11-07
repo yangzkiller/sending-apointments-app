@@ -30,5 +30,5 @@ Route::prefix('authentication')->name('authentication.')->group(function () {
     });
 });
 
-Route::middleware('auth')->get('Home', [AuthenticationController::class, 'home'])
+Route::middleware(['auth', 'check.active'])->get('Home', [AuthenticationController::class, 'home'])
     ->name('home');
