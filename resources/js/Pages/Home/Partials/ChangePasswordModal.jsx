@@ -67,6 +67,7 @@ export default function ChangePasswordModal({ isOpen, onClose }) {
             isOpen={isOpen}
             onClose={resetModal}
             title="Mudar Senha"
+            className="md:!h-90"
         >
             {errors.general && (
                 <p className="text-red-500 text-sm text-center mb-4">{errors.general}</p>

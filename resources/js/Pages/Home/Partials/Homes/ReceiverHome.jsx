@@ -9,6 +9,8 @@ export default function ReceiverHome() {
     const [institutions, setInstitutions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedSheets, setSelectedSheets] = useState([]);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [statusFilter, setStatusFilter] = useState("");
 
     useEffect(() => {
         fetchInstitutions();
@@ -78,7 +80,6 @@ export default function ReceiverHome() {
             document.body.removeChild(link);
 
             toast.success("Download concluído!");
-
             await fetchInstitutions();
             setSelectedSheets([]);
         } catch (error) {
@@ -108,6 +109,12 @@ export default function ReceiverHome() {
         }
     };
 
+    const filteredInstitutions = institutions.filter((inst) => {
+        const matchesName = inst.name.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesStatus = statusFilter ? String(inst.status) === statusFilter : true;
+        return matchesName && matchesStatus;
+    });
+
     return (
         <div>
             <InstitutionsFilter
@@ -118,10 +125,14 @@ export default function ReceiverHome() {
                     selectedSheets.length ===
                         institutions.flatMap((inst) => inst.spreadsheets).length
                 }
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                statusFilter={statusFilter}
+                setStatusFilter={setStatusFilter}
             />
 
             <InstitutionsList
-                institutions={institutions}
+                institutions={filteredInstitutions}
                 loading={loading}
                 onSelectSheet={handleSelectSheet}
                 onSelectInstitution={handleSelectInstitution}
