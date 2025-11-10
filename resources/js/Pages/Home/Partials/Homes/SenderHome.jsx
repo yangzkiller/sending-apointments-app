@@ -10,7 +10,6 @@ import UploadSpreadsheetCard from "@/Pages/Home/Partials/Cards/UploadSpreadsheet
 export default function SenderHome() {
     const { auth } = usePage().props;
     const institution = auth?.user?.institution || "default";
-
     const [loading, setLoading] = useState(false);
     const [lastImport, setLastImport] = useState(null);
 
@@ -29,7 +28,7 @@ export default function SenderHome() {
 
     const handleDownload = () => {
         const date = new Date().toISOString().split("T")[0];
-        const safeInstitution = institution.replace(/\s+/g, "_");
+        const safeInstitution = institution.toLowerCase().replace(/\s+/g, "_");
         const fileName = `default-${safeInstitution}-${date}.xlsx`;
 
         const link = document.createElement("a");

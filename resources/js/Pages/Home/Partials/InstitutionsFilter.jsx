@@ -2,10 +2,9 @@ import { Search, Filter, Download, ArrowBigRightDash } from "lucide-react";
 import FormField from "@/Components/Generals/FormField";
 
 export default function InstitutionsFilter({
-    selectAll,
-    institutions,
+    onDownload,
     onSelectAll,
-    onDownloadAll,
+    allSelected
 }) {
     return (
         <div className="w-full max-w-6xl mx-auto mt-10 mb-6 px-6">
@@ -14,15 +13,15 @@ export default function InstitutionsFilter({
                     <label className="flex items-center gap-2 text-sm text-gray-300 whitespace-nowrap">
                         <input
                             type="checkbox"
-                            checked={selectAll}
-                            onChange={(e) => onSelectAll(e.target.checked, institutions)}
                             className="accent-blue-500 cursor-pointer"
+                            checked={allSelected}
+                            onChange={(e) => onSelectAll(e.target.checked)}
                         />
                         Selecionar todas
                     </label>
 
                     <button
-                        onClick={onDownloadAll}
+                    onClick={onDownload}
                         className="flex items-center gap-2 px-3 py-2 bg-green-600 hover:bg-green-700 text-sm rounded-lg text-white transition transform hover:scale-103 cursor-pointer"
                     >
                         <Download size={16} />

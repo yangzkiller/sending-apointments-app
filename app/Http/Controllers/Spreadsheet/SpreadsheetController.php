@@ -4,15 +4,98 @@ namespace App\Http\Controllers\Spreadsheet;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Spreadsheet\Spreadsheet;
 use App\Models\Spreadsheet\SpreadsheetRow;
+use App\Models\Institution\Institution;
 use App\Models\General\Log;
+use App\Enums\Status;
 use Carbon\Carbon;
-use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class SpreadsheetController extends Controller
 {
+    /**
+     * Handle the download of selected spreadsheets as a single CSV file.
+     *
+     * @param  Request  $request
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse|\Illuminate\Http\JsonResponse
+     */
+    public function downloadCsv(Request $request): JsonResponse|StreamedResponse
+    {
+        $sheetIds = $request->input('sheets', []);
+
+        if (empty($sheetIds)) {
+            return response()->json(['error' => 'Nenhuma planilha selecionada.'], 400);
+        }
+
+        $sheets = Spreadsheet::with(['spreadsheetRows'])
+            ->whereIn('id', $sheetIds)
+            ->get();
+
+        if ($sheets->isEmpty()) {
+            return response()->json(['error' => 'Nenhuma planilha encontrada.'], 404);
+        }
+
+        $expectedHeaders = [
+            'DATA',
+            'HORA',
+            'NOME',
+            'DDI',
+            'DDD',
+            'CELULAR',
+            'ESPECIALIDADE',
+            'UNIDADE',
+            'ENDERECO',
+            'IDENTIFICADOR',
+        ];
+
+        $response = new StreamedResponse(function () use ($sheets, $expectedHeaders) {
+            $handle = fopen('php://output', 'w');
+
+            fprintf($handle, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+            fputcsv($handle, $expectedHeaders, ';');
+
+            foreach ($sheets as $sheet) {
+                foreach ($sheet->spreadsheetRows as $row) {
+                    fputcsv($handle, [
+                        Carbon::parse($sheet->created_at)->format('d/m/Y'),
+                        Carbon::parse($sheet->created_at)->format('H:i:'),
+                        $row->name,
+                        $row->ddi,
+                        $row->ddd,
+                        $row->phone,
+                        $row->speciality,
+                        $row->institution,
+                        $row->address,
+                        $row->identifier,
+                    ], ';');
+                }
+            }
+
+            fclose($handle);
+        });
+
+        $fileName = 'planilhas_' . now()->format('Y_m_d_His') . '.csv';
+
+        $response->headers->set('Content-Type', 'text/csv; charset=UTF-8');
+        $response->headers->set('Content-Disposition', "attachment; filename=\"$fileName\"");
+
+        Spreadsheet::whereIn('id', $sheetIds)->update(['status' => Status::DOWNLOAD_COMPLETED->value]);
+
+        $user = Auth::user();
+
+        Log::create([
+            'action' => 'DOWNLOAD_SPREADSHEET',
+            'description' => "User {$user->name} download CSV successfully.",
+            'id_user' => $user->id,
+        ]);
+
+        return $response;
+    }
+
     /**
      * Get the last spreadsheet import made by any user
      * from the same institution as the authenticated user.
@@ -131,7 +214,7 @@ class SpreadsheetController extends Controller
 
             if ($filledCount === 0) continue;
 
-            $ddi = '51';
+            $ddi = '55';
             $ddd = str_pad(preg_replace('/\D/', '', $row['DDD'] ?? ''), 2, '0', STR_PAD_LEFT);
             $phone = preg_replace('/\D/', '', $row['CELULAR'] ?? '');
             if (strlen($phone) > 9) $phone = substr($phone, -9);
@@ -167,12 +250,14 @@ class SpreadsheetController extends Controller
         }
 
         $spreadsheet = Spreadsheet::create([
-            'name' => 'Import ' . now()->format('Y-m-d H:i:s'),
+            'name' => $validated['file_name'],
             'rows' => count($validRows),
-            'status' => 0,
+            'status' => 1,
             'id_user' => $user->id,
             'id_institution' => $institutionId,
         ]);
+
+        Institution::where('id', $institutionId)->update(['status' => Status::SPREADSHEET_SENT->value]);
 
         foreach (array_chunk($validRows, 500) as $chunk) {
             foreach ($chunk as &$row) {

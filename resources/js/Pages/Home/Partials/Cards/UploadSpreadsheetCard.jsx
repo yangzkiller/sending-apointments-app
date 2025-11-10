@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { FileUp, Loader2 } from "lucide-react";
 import Card from "@/Components/Generals/Card";
 import Button from "@/Components/Generals/Button";
@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 
 export default function UploadSpreadsheetCard({ onUpload, loading, lastImport }) {
     const [file, setFile] = useState(null);
+    const fileInputRef = useRef(null);
 
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
@@ -18,6 +19,10 @@ export default function UploadSpreadsheetCard({ onUpload, loading, lastImport })
         }
         onUpload(file);
         setFile(null);
+
+        if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+        }
     };
 
     return (
@@ -33,6 +38,7 @@ export default function UploadSpreadsheetCard({ onUpload, loading, lastImport })
                 </p>
 
                 <input
+                    ref={fileInputRef}
                     type="file"
                     accept=".xlsx"
                     onChange={handleFileChange}

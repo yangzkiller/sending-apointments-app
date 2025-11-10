@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('spreadsheets', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
             $table->foreignId('id_user')->constrained('users')->onDelete('cascade');
             $table->foreignId('id_institution')->constrained('institutions')->onDelete('cascade');
             $table->integer('rows');
-            $table->integer('status');
+            $table->integer('status')->default(1);
             $table->timestamps();
         });
     }

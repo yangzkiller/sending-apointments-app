@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { usePage } from "@inertiajs/react";
 import InstitutionsFilter from "@/Pages/Home/Partials/InstitutionsFilter";
 import InstitutionsList from "@/Pages/Home/Partials/InstitutionsList";
 import api from "@/axios";
@@ -7,119 +6,127 @@ import { route } from "ziggy-js";
 import { toast } from "react-toastify";
 
 export default function ReceiverHome() {
-    const { auth } = usePage().props;
-
     const [institutions, setInstitutions] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [selectAll, setSelectAll] = useState(false);
-    const [selectedInstitutions, setSelectedInstitutions] = useState([]);
-    const [selectedSheets, setSelectedSheets] = useState({});
+    const [selectedSheets, setSelectedSheets] = useState([]);
 
     useEffect(() => {
-        const fetchInstitutions = async () => {
-            try {
-                const response = await api.get(route("institutions.all"));
-                const fakeInstitutions = response.data.data.map((inst) => ({
-                    ...inst,
-                    spreadsheets: [
-                        { name: "Planilha Janeiro.xlsx", status: "Concluída" },
-                        { name: "Planilha Fevereiro.xlsx", status: "Pendente" },
-                        { name: "Planilha Março.xlsx", status: "Em análise" },
-                    ],
-                }));
-                setInstitutions(fakeInstitutions);
-            } catch (error) {
-                console.error(error);
-                toast.error("Erro ao carregar instituições.");
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchInstitutions();
     }, []);
 
-    const handleSelectAll = (checked, institutionsList) => {
-        setSelectAll(checked);
-        if (checked) {
-            setSelectedInstitutions(institutionsList.map((i) => i.id));
-            const allSheets = {};
-            institutionsList.forEach((inst) => {
-                allSheets[inst.id] = inst.spreadsheets.map((s) => s.name);
-            });
-            setSelectedSheets(allSheets);
-        } else {
-            setSelectedInstitutions([]);
-            setSelectedSheets({});
+    const fetchInstitutions = async () => {
+        try {
+            const response = await api.get(route("institution.all"));
+            setInstitutions(response.data.data);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
         }
     };
 
-    const handleInstitutionToggle = (instId, checked, spreadsheets, totalInst) => {
-        let updatedInstitutions = [];
-        let updatedSheets = { ...selectedSheets };
-
-        if (checked) {
-            updatedInstitutions = [...selectedInstitutions, instId];
-            updatedSheets[instId] = spreadsheets.map((s) => s.name);
-        } else {
-            updatedInstitutions = selectedInstitutions.filter((id) => id !== instId);
-            delete updatedSheets[instId];
-        }
-
-        setSelectedInstitutions(updatedInstitutions);
-        setSelectedSheets(updatedSheets);
-        setSelectAll(updatedInstitutions.length === totalInst);
+    const handleSelectSheet = (sheetId, checked) => {
+        setSelectedSheets(prev =>
+            checked ? [...prev, sheetId] : prev.filter(id => id !== sheetId)
+        );
     };
 
-    const handleSheetToggle = (instId, sheetName, checked, totalSheets, totalInst) => {
-        setSelectedSheets((prev) => {
-            const current = prev[instId] || [];
-            const updated = checked
-                ? [...current, sheetName]
-                : current.filter((s) => s !== sheetName);
+    const handleSelectInstitution = (institution, checked) => {
+        const sheetIds = institution.spreadsheets.map(s => s.id);
 
-            const newSheets = { ...prev, [instId]: updated };
-
-            if (updated.length === totalSheets) {
-                if (!selectedInstitutions.includes(instId)) {
-                    setSelectedInstitutions((prevInst) => [...prevInst, instId]);
-                }
+        setSelectedSheets(prev => {
+            if (checked) {
+                const news = sheetIds.filter(id => !prev.includes(id));
+                return [...prev, ...news];
             } else {
-                setSelectedInstitutions((prevInst) =>
-                    prevInst.filter((id) => id !== instId)
-                );
+                return prev.filter(id => !sheetIds.includes(id));
             }
-
-            setSelectAll(
-                Object.keys(newSheets).length === totalInst &&
-                    Object.values(newSheets).every(
-                        (arr) => arr.length === totalSheets
-                    )
-            );
-
-            return newSheets;
         });
     };
 
-    const handleDownloadSelected = () => toast.info("Baixando planilhas selecionadas...");
-    const handleDownloadByInstitution = () => toast.info("Baixando planilhas por unidade...");
-    const handleDownloadAll = () => toast.info("Baixando todas as planilhas...");
+    const handleSelectAll = (checked) => {
+        if (checked) {
+            const allSheetIds = institutions
+                .filter((inst) => inst.spreadsheets.length > 0)
+                .flatMap((inst) => inst.spreadsheets.map((s) => s.id));
+
+            setSelectedSheets(allSheetIds);
+        } else {
+            setSelectedSheets([]);
+        }
+    };
+
+    const handleDownload = async () => {
+        if (selectedSheets.length === 0) {
+            toast.warning("Selecione pelo menos uma planilha!");
+            return;
+        }
+
+        try {
+            const response = await api.post(
+                route("spreadsheet.downloadCsv"),
+                { sheets: selectedSheets },
+                { responseType: "blob" }
+            );
+
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", "AGENDAMENTOS.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            toast.success("Download concluído!");
+
+            await fetchInstitutions();
+            setSelectedSheets([]);
+        } catch (error) {
+            console.error(error);
+            toast.error("Erro ao gerar o CSV.");
+        }
+    };
+
+    const handleConfirm = async (institutionId, status) => {
+        try {
+            const response = await api.patch(
+                route("institution.updateStatus", institutionId),
+                { status }
+            );
+
+            if (response.data?.message) {
+                toast.success(response.data.message);
+            }
+
+            await fetchInstitutions();
+        } catch (error) {
+            console.error(error);
+            toast.error(
+                error.response?.data?.message ||
+                    "Erro ao atualizar status da instituição."
+            );
+        }
+    };
 
     return (
         <div>
             <InstitutionsFilter
-                selectAll={selectAll}
-                institutions={institutions}
+                onDownload={handleDownload}
                 onSelectAll={handleSelectAll}
-                onDownloadAll={handleDownloadAll}
+                allSelected={
+                    selectedSheets.length > 0 &&
+                    selectedSheets.length ===
+                        institutions.flatMap((inst) => inst.spreadsheets).length
+                }
             />
 
             <InstitutionsList
                 institutions={institutions}
                 loading={loading}
-                selectedInstitutions={selectedInstitutions}
+                onSelectSheet={handleSelectSheet}
+                onSelectInstitution={handleSelectInstitution}
                 selectedSheets={selectedSheets}
-                onInstitutionToggle={handleInstitutionToggle}
-                onSheetToggle={handleSheetToggle}
+                onConfirm={handleConfirm}
             />
         </div>
     );

@@ -14,18 +14,40 @@ Route::middleware('auth')->group(function () {
 });
 
 //SENDER
-Route::middleware(['auth', 'sender'])
-    ->prefix('spreadsheet')
-    ->name('spreadsheet.')
-    ->group(function () {
-        Route::post('/import', [SpreadsheetController::class, 'store'])->name('import');
-        Route::get('/last', [SpreadsheetController::class, 'lastImport'])->name('last');
+Route::prefix('spreadsheet')->name('spreadsheet.')->group(function () {
+    Route::middleware(['auth', 'sender'])->group(function () {
+        Route::post('/import', [SpreadsheetController::class, 'store'])
+            ->name('import');
+
+        Route::get('/last', [SpreadsheetController::class, 'lastImport'])
+            ->name('last');
     });
+});
 
 //RECEIVER
-Route::middleware(['auth', 'receiver'])
-    ->prefix('institutions')
-    ->name('institutions.')
-    ->group(function () {
-        Route::get('/all', [InstitutionController::class, 'getAll'])->name('all');
+Route::prefix('institution.')->name('institution.')->group(function () {
+    Route::middleware(['auth', 'receiver'])->group(function () {
+        Route::get('/all', [InstitutionController::class, 'all'])
+            ->name('all');
+
+        Route::patch('/update-status/{id}', [InstitutionController::class, 'updateStatus'])
+            ->name('updateStatus');
     });
+});
+
+Route::prefix('spreadsheet')->name('spreadsheet.')->group(function () {
+    Route::middleware(['auth', 'receiver'])->group(function () {
+        Route::post('/download-csv', [SpreadsheetController::class, 'downloadCsv'])
+        ->name('downloadCsv');
+    });
+});
+
+
+
+
+
+
+
+
+
+
