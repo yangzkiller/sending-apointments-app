@@ -1,14 +1,18 @@
 import { useEffect, useState } from "react";
-import { X, Building2, Search, Users, CheckCircle, XCircle, Loader2, Calendar, ArrowUpDown, CalendarIcon, Edit, Hash } from "lucide-react";
+import { Building2, Search, Users, CheckCircle, XCircle, Loader2, ArrowUpDown, CalendarIcon, Edit, Hash } from "lucide-react";
 import { route } from "ziggy-js";
 import { toast } from "react-toastify";
 import api from "@/axios";
+import Modal from "@/Components/Generals/Modal";
+import EditInstitutionModal from "./EditInstitutionModal";
 
 export default function InstitutionListModal({ isOpen, onClose }) {
     const [institutions, setInstitutions] = useState([]);
     const [loading, setLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [sortBy, setSortBy] = useState("id");
+    const [editingInstitution, setEditingInstitution] = useState(null);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     useEffect(() => {
         if (isOpen) {
@@ -48,43 +52,43 @@ export default function InstitutionListModal({ isOpen, onClose }) {
     const inactiveInstitutions = sortedInstitutions.filter(i => i.active === 0).length;
     const totalUsers = sortedInstitutions.reduce((sum, inst) => sum + inst.users_count, 0);
 
-    if (!isOpen) return null;
+    const handleEditInstitution = (institution) => {
+        setEditingInstitution(institution);
+        setIsEditModalOpen(true);
+    };
+
+    const handleCloseEditModal = () => {
+        setIsEditModalOpen(false);
+        setEditingInstitution(null);
+    };
+
+    const handleInstitutionUpdated = () => {
+        fetchInstitutions();
+    };
 
     return (
-        <div 
-            className="fixed inset-0 z-[99999] flex items-center justify-center p-2 sm:p-4 animate-fadeIn bg-black/00 backdrop-blur-sm"
-            onClick={onClose}
-            style={{ pointerEvents: 'auto' }}
+        <>
+        <Modal 
+            isOpen={isOpen} 
+            onClose={onClose} 
+            title="Gerenciar Instituições"
+            className="max-w-3xl"
+            maxHeight="max-h-[75vh]"
         >
-            <div 
-                className="relative z-[100000] bg-slate-900 rounded-2xl sm:rounded-3xl shadow-2xl w-full max-w-2xl max-h-[75vh] sm:max-h-[90vh] flex flex-col animate-slideUp border border-cyan-500/20 mt-0 sm:mt-20"
-                onClick={(e) => e.stopPropagation()}
-                style={{ pointerEvents: 'auto' }}
-            >
-                {/* Header */}
-                <div className="relative p-4 bg-gradient-to-br from-cyan-900 via-blue-900 to-slate-900 text-white rounded-t-3xl border-b border-cyan-500/30">
-                    <button
-                        onClick={onClose}
-                        className="absolute top-3 right-3 p-1.5 hover:bg-cyan-500/20 rounded-lg transition-all"
-                    >
-                        <X className="w-4 h-4 text-cyan-300" />
-                    </button>
-                    
-                    <div className="flex items-center gap-3 mb-3">
-                        <div className="p-2 bg-cyan-500/20 rounded-xl backdrop-blur-sm border border-cyan-400/30">
-                            <Building2 className="w-5 h-5 text-cyan-300" />
-                        </div>
-                        <div>
-                            <h2 className="text-xl font-bold text-white">
-                                Gerenciar Instituições
-                            </h2>
-                            <p className="text-cyan-200 text-xs">
-                                Total de {filteredInstitutions.length} instituição(ões)
-                            </p>
-                        </div>
+            {/* Header Info */}
+            <div className="mb-4">
+                <div className="flex items-center gap-3 mb-3">
+                    <div className="p-2 bg-cyan-500/20 rounded-xl backdrop-blur-sm border border-cyan-400/30">
+                        <Building2 className="w-5 h-5 text-cyan-300" />
                     </div>
+                    <div>
+                        <p className="text-cyan-200 text-sm">
+                            Total de {filteredInstitutions.length} instituições
+                        </p>
+                    </div>
+                </div>
 
-                    {/* Stats */}
+                {/* Stats */}
                     <div className="grid grid-cols-3 gap-2">
                         <div className="bg-cyan-500/15 backdrop-blur-sm rounded-lg p-2 border border-cyan-500/25">
                             <div className="flex items-center gap-1 text-xs font-semibold mb-1 text-cyan-200">
@@ -120,7 +124,7 @@ export default function InstitutionListModal({ isOpen, onClose }) {
                                 placeholder="Buscar instituição por nome..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-9 pr-3 py-1 text-sm bg-slate-700 border border-slate-600 text-white placeholder-slate-400 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                className="w-full pl-9 pr-3 py-1 text-sm bg-slate-700 border border-slate-600 text-white placeholder-slate-400 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all hover:border-blue-400/50"
                             />
                         </div>
                         
@@ -129,7 +133,7 @@ export default function InstitutionListModal({ isOpen, onClose }) {
                             <select
                                 value={sortBy}
                                 onChange={(e) => setSortBy(e.target.value)}
-                                className="pl-9 pr-3 py-1 text-sm bg-slate-700 border border-slate-600 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none cursor-pointer"
+                                className="pl-9 pr-3 py-1 text-sm bg-slate-700 border border-slate-600 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none cursor-pointer hover:border-blue-400/50"
                             >
                                 <option value="id">Por ID</option>
                                 <option value="name">Por Nome</option>
@@ -200,7 +204,10 @@ export default function InstitutionListModal({ isOpen, onClose }) {
                                                 </div>
 
                                                 {/* Edit button */} 
-                                                <button className="flex flex-col items-center justify-center bg-cyan-600/15 hover:bg-cyan-600/25 border border-cyan-500/30 rounded-lg py-2.5 text-cyan-200 hover:text-cyan-100 transition-colors active:scale-95">
+                                                <button 
+                                                    onClick={() => handleEditInstitution(institution)}
+                                                    className="flex flex-col items-center justify-center bg-cyan-600/15 hover:bg-cyan-600/25 border border-cyan-500/30 rounded-lg py-2.5 text-cyan-200 hover:text-cyan-100 transition-colors active:scale-95 cursor-pointer"
+                                                >
                                                     <Edit className="w-4 h-4 mb-1" />
                                                     <div className="font-bold text-white text-[12px]">Editar</div>
                                                 </button>
@@ -221,17 +228,15 @@ export default function InstitutionListModal({ isOpen, onClose }) {
                         </div>
                     )}
                 </div>
+        </Modal>
 
-                {/* Footer */}
-                <div className="p-1 border-t border-slate-700 bg-slate-800/50 backdrop-blur-sm rounded-b-3xl">
-                    <button
-                        onClick={onClose}
-                        className="w-full py-1 bg-gradient-to-r from-cyan-600 to-blue-700 text-white rounded-xl hover:from-cyan-500 hover:to-blue-600 transition-all font-semibold text-base shadow-md border border-cyan-500/30"
-                    >
-                        Fechar Painel
-                    </button>
-                </div>
-            </div>
-        </div>
+        {/* Edit Institution Modal */}
+        <EditInstitutionModal
+            isOpen={isEditModalOpen}
+            onClose={handleCloseEditModal}
+            institution={editingInstitution}
+            onInstitutionUpdated={handleInstitutionUpdated}
+        />
+        </>
     );
 }

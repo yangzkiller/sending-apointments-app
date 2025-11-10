@@ -8,7 +8,7 @@ export default function Modal({
   children,
   showClose = true,
   className = "",
-  maxHeight = "max-h-[85vh]",
+  maxHeight = "max-h-[80vh]",
 }) {
     if (!isOpen) return null;
 

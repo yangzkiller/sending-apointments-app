@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import { User, Mail, Lock, Shield, Building2, Eye, EyeOff, Loader2, Save, AlertCircle } from "lucide-react";
+import { User, Mail, Lock, Shield, Building2, Eye, EyeOff, Loader2, UserPlus, AlertCircle } from "lucide-react";
 import { toast } from "react-toastify";
 import api from "@/axios";
 import { route } from "ziggy-js";
 import Modal from "@/Components/Generals/Modal";
 
-export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) {
+export default function CreateUserModal({ isOpen, onClose, onUserCreated }) {
     const [loading, setLoading] = useState(false);
     const [institutions, setInstitutions] = useState([]);
     const [showPassword, setShowPassword] = useState(false);
@@ -19,18 +19,10 @@ export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) 
     });
 
     useEffect(() => {
-        if (isOpen && user) {
-            setFormData({
-                name: user.name || "",
-                email: user.email || "",
-                password: "",
-                role: user.role || 0,
-                active: user.active === 1,
-                id_institution: user.institution?.id || "",
-            });
+        if (isOpen) {
             fetchInstitutions();
         }
-    }, [isOpen, user]);
+    }, [isOpen]);
 
     const fetchInstitutions = async () => {
         try {
@@ -45,12 +37,12 @@ export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
         
-        // Se o role mudar e não for SENDER (0), limpar instituição
+        // If the role changes and is not SENDER (0), clear the institution
         if (name === "role" && parseInt(value) !== 0) {
             setFormData((prev) => ({
                 ...prev,
                 [name]: type === "checkbox" ? checked : value,
-                id_institution: "", // Limpa a instituição
+                id_institution: "",
             }));
         } else {
             setFormData((prev) => ({
@@ -68,33 +60,53 @@ export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) 
             const dataToSend = {
                 name: formData.name,
                 email: formData.email,
+                password: formData.password,
                 role: parseInt(formData.role),
                 active: formData.active ? 1 : 0,
-                // Apenas envia instituição se for SENDER (role = 0)
                 id_institution: parseInt(formData.role) === 0 ? (formData.id_institution || null) : null,
             };
 
-            if (formData.password && formData.password.trim() !== "") {
-                dataToSend.password = formData.password;
-            }
-
-            await api.put(route("admin.users.update", user.id), dataToSend);
+            await api.post(route("admin.users.store"), dataToSend);
             
-            toast.success("Usuário atualizado com sucesso!");
-            onUserUpdated();
+            toast.success("Usuário criado com sucesso!");
+            
+            // Reset form
+            setFormData({
+                name: "",
+                email: "",
+                password: "",
+                role: 0,
+                active: true,
+                id_institution: "",
+            });
+            
+            onUserCreated();
             onClose();
         } catch (error) {
-            console.error("Erro ao atualizar usuário:", error);
+            console.error("Erro ao criar usuário:", error);
             
             if (error.response?.data?.errors) {
                 const errors = error.response.data.errors;
                 Object.values(errors).flat().forEach((msg) => toast.error(msg));
             } else {
-                toast.error(error.response?.data?.message || "Erro ao atualizar usuário");
+                toast.error(error.response?.data?.message || "Erro ao criar usuário");
             }
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleClose = () => {
+        // Reset form when closing
+        setFormData({
+            name: "",
+            email: "",
+            password: "",
+            role: 0,
+            active: true,
+            id_institution: "",
+        });
+        onClose();
     };
 
     const getRoleInfo = (roleValue) => {
@@ -106,19 +118,20 @@ export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) 
         return roles[roleValue] || roles[0];
     };
 
-    if (!user) return null;
+    // Check if the institution field can be shown (only for SENDER)
+    const canSelectInstitution = parseInt(formData.role) === 0;
 
     return (
         <Modal 
             isOpen={isOpen} 
-            onClose={onClose} 
-            title="Editar Usuário" 
+            onClose={handleClose} 
+            title="Criar Novo Usuário" 
             className="max-w-3xl"
-            maxHeight="max-h-[75vh]"
+            maxHeight="max-h-[85vh]"
         >
-            <form onSubmit={handleSubmit} className="space-y-1">
+            <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Name */}
-                <div className="space-y-1">
+                <div className="space-y-2">
                     <label className="flex items-center gap-2 text-sm font-medium text-gray-200">
                         <User className="w-4 h-4 text-cyan-400" />
                         Nome Completo
@@ -129,13 +142,13 @@ export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) 
                         value={formData.name}
                         onChange={handleChange}
                         required
-                        className="w-full px-4 py-2.5 bg-slate-800/50 border border-slate-600/50 rounded-xl text-white placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all text-sm hover:border-blue-400/50"
+                        className="w-full px-4 py-2.5 bg-slate-800/50 border border-slate-600/50 rounded-xl text-white placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all text-sm"
                         placeholder="Digite o nome completo"
                     />
                 </div>
 
                 {/* Email */}
-                <div className="space-y-1">
+                <div className="space-y-2">
                     <label className="flex items-center gap-2 text-sm font-medium text-gray-200">
                         <Mail className="w-4 h-4 text-cyan-400" />
                         Email
@@ -146,17 +159,16 @@ export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) 
                         value={formData.email}
                         onChange={handleChange}
                         required
-                        className="w-full px-4 py-2.5 bg-slate-800/50 border border-slate-600/50 rounded-xl text-white placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all text-sm hover:border-blue-400/50"
+                        className="w-full px-4 py-2.5 bg-slate-800/50 border border-slate-600/50 rounded-xl text-white placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all text-sm"
                         placeholder="usuario@exemplo.com"
                     />
                 </div>
 
-                {/* New Password (Optional) */}
+                {/* Password */}
                 <div className="space-y-2">
                     <label className="flex items-center gap-2 text-sm font-medium text-gray-200">
                         <Lock className="w-4 h-4 text-cyan-400" />
-                        Nova Senha
-                        <span className="text-xs text-gray-400 font-normal">(deixe em branco para não alterar)</span>
+                        Senha
                     </label>
                     <div className="relative">
                         <input
@@ -164,14 +176,15 @@ export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) 
                             name="password"
                             value={formData.password}
                             onChange={handleChange}
-                            className="w-full px-4 py-2.5 pr-12 bg-slate-800/50 border border-slate-600/50 rounded-xl text-white placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all text-sm hover:border-blue-400/50"
+                            required
+                            className="w-full px-4 py-2.5 pr-12 bg-slate-800/50 border border-slate-600/50 rounded-xl text-white placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all text-sm"
                             placeholder="Mínimo 8 caracteres"
                             minLength={8}
                         />
                         <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 hover:bg-slate-700/50 rounded-lg transition-colors "
+                            className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 hover:bg-slate-700/50 rounded-lg transition-colors"
                         >
                             {showPassword ? (
                                 <EyeOff className="w-4 h-4 text-gray-400" />
@@ -182,6 +195,7 @@ export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) 
                     </div>
                 </div>
 
+                {/* Role and Institution - Responsive Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {/* Role */}
                     <div className="space-y-2">
@@ -194,7 +208,7 @@ export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) 
                             value={formData.role}
                             onChange={handleChange}
                             required
-                            className="w-full px-4 py-2.5 bg-slate-800/50 border border-slate-600/50 rounded-xl text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all text-sm appearance-none cursor-pointer hover:border-blue-400/50"
+                            className="w-full px-4 py-2.5 bg-slate-800/50 border border-slate-600/50 rounded-xl text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all text-sm appearance-none cursor-pointer"
                         >
                             <option value={0}>Remetente</option>
                             <option value={1}>Destinatário</option>
@@ -207,7 +221,7 @@ export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) 
                         <label className="flex items-center gap-2 text-sm font-medium text-gray-200">
                             <Building2 className="w-4 h-4 text-cyan-400" />
                             Instituição
-                            {parseInt(formData.role) !== 0 && (
+                            {!canSelectInstitution && (
                                 <span className="text-xs text-amber-400">(Apenas para Remetentes)</span>
                             )}
                         </label>
@@ -215,9 +229,9 @@ export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) 
                             name="id_institution"
                             value={formData.id_institution}
                             onChange={handleChange}
-                            disabled={parseInt(formData.role) !== 0}
+                            disabled={!canSelectInstitution}
                             className={`w-full px-4 py-2.5 bg-slate-800/50 border border-slate-600/50 rounded-xl text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all text-sm appearance-none ${
-                                parseInt(formData.role) === 0 ? 'cursor-pointer hover:border-blue-400/50' : 'cursor-not-allowed opacity-50'
+                                canSelectInstitution ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'
                             }`}
                         >
                             <option value="">Nenhuma</option>
@@ -231,6 +245,19 @@ export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) 
                         </select>
                     </div>
                 </div>
+
+                {/* Alert about Institution restriction */}
+                {!canSelectInstitution && (
+                    <div className="flex items-start gap-3 p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl">
+                        <AlertCircle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                            <p className="text-sm text-amber-200 font-medium">Restrição de Instituição</p>
+                            <p className="text-xs text-amber-300/80 mt-1">
+                                Apenas usuários com função "Remetente" podem ser vinculados a uma instituição.
+                            </p>
+                        </div>
+                    </div>
+                )}
 
                 {/* Status Active */}
                 <div className="flex items-center justify-between p-3 bg-slate-800/30 rounded-xl border border-slate-600/30">
@@ -250,7 +277,7 @@ export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) 
                             onChange={handleChange}
                             className="sr-only peer"
                         />
-                        <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-cyan-800 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-600"></div>
                     </label>
                 </div>
 
@@ -267,26 +294,26 @@ export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) 
                 <div className="flex flex-col sm:flex-row gap-3 pt-2">
                     <button
                         type="button"
-                        onClick={onClose}
+                        onClick={handleClose}
                         disabled={loading}
-                        className="flex-1 px-6 py-2.5 bg-slate-700 hover:bg-slate-600 text-white rounded-xl transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed text-sm cursor-pointer"
+                        className="flex-1 px-6 py-2.5 bg-slate-700 hover:bg-slate-600 text-white rounded-xl transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                     >
                         Cancelar
                     </button>
                     <button
                         type="submit"
                         disabled={loading}
-                        className="flex-1 px-6 py-2.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-xl transition-all font-medium shadow-lg shadow-cyan-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm cursor-pointer"
+                        className="flex-1 px-6 py-2.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-xl transition-all font-medium shadow-lg shadow-cyan-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
                     >
                         {loading ? (
                             <>
                                 <Loader2 className="w-5 h-5 animate-spin" />
-                                Salvando...
+                                Criando...
                             </>
                         ) : (
                             <>
-                                <Save className="w-5 h-5" />
-                                Salvar Alterações
+                                <UserPlus className="w-5 h-5" />
+                                Criar Usuário
                             </>
                         )}
                     </button>

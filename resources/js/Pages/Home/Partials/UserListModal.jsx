@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { X, Users, Search, Mail, Building2, Shield, UserCheck, UserX, Loader2, Edit } from "lucide-react";
+import { Users, Search, Mail, Building2, Shield, UserCheck, UserX, Loader2, Edit } from "lucide-react";
 import { route } from "ziggy-js";
 import { toast } from "react-toastify";
 import api from "@/axios";
 import EditUserModal from "./EditUserModal";
+import Modal from "@/Components/Generals/Modal";
 
 export default function UserListModal({ isOpen, onClose }) {
     const [users, setUsers] = useState([]);
@@ -64,35 +65,23 @@ export default function UserListModal({ isOpen, onClose }) {
     const inactiveUsers = filteredUsers.filter(u => u.active === 0).length;
     const adminCount = filteredUsers.filter(u => u.role === 2).length;
 
-    if (!isOpen) return null;
-
     return (
-        <div 
-            className="fixed inset-0 flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fadeIn bg-black/0 backdrop-blur-sm"
-            onClick={onClose}
-            style={{ pointerEvents: 'auto' }}
-        >
-            <div 
-                className="relative bg-slate-900 rounded-2xl sm:rounded-3xl shadow-2xl w-full max-w-2xl max-h-[75vh] sm:max-h-[90vh] flex flex-col animate-slideUp border border-cyan-500/20 mt-0 sm:mt-20"
-                onClick={(e) => e.stopPropagation()}
-                style={{ pointerEvents: 'auto' }}
+        <>
+            <Modal 
+                isOpen={isOpen} 
+                onClose={onClose} 
+                title="Gerenciar Usuários"
+                className="max-w-3xl"
+                maxHeight="max-h-[75vh]"
             >
-                {/* Header */}
-                <div className="relative p-3 sm:p-1 bg-gradient-to-r from-blue-900 via-gray-850 to-light-black text-white rounded-t-2xl border-b border-blue-800">
-                    <button
-                        onClick={onClose}
-                        className="absolute top-2 right-2 sm:top-3 sm:right-3 p-1.5 hover:bg-blue-800/50 rounded-lg transition-colors"
-                    >
-                        <X className="w-4 h-4 text-blue-200" />
-                    </button>
-                    
-                    <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+                {/* Header Info */}
+                <div className="mb-4">
+                    <div className="flex items-center gap-2 sm:gap-3 mb-3">
                         <div className="p-1.5 sm:p-2 bg-blue-600/20 rounded-lg sm:rounded-xl backdrop-blur-sm border border-blue-500/30">
                             <Users className="w-4 h-4 sm:w-5 sm:h-5 text-blue-300" />
                         </div>
                         <div>
-                            <h2 className="text-lg sm:text-xl font-bold text-white">Gerenciar Usuários</h2>
-                            <p className="text-blue-200 text-xs">
+                            <p className="text-blue-200 text-sm">
                                 Total de {filteredUsers.length} usuário(s)
                             </p>
                         </div>
@@ -179,7 +168,7 @@ export default function UserListModal({ isOpen, onClose }) {
                                             </div>
                                             <button
                                                 onClick={() => handleEditUser(user)}
-                                                className="p-1.5 sm:p-2 bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/30 hover:border-blue-400/50 rounded-lg transition-all duration-200 group/btn flex-shrink-0"
+                                                className="p-1.5 sm:p-2 bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/30 hover:border-blue-400/50 rounded-lg transition-all duration-200 group/btn flex-shrink-0 cursor-pointer"
                                                 title="UserEdit"
                                             >
                                                 <Edit className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-300 group-hover/btn:text-blue-200 transition-colors" />
@@ -209,17 +198,7 @@ export default function UserListModal({ isOpen, onClose }) {
                         </div>
                     )}
                 </div>
-
-                {/* Footer */}
-                <div className="p-2 sm:p-1 border-t border-gray-700 bg-gray-800 rounded-b-2xl">
-                    <button
-                        onClick={onClose}
-                        className="w-full py-2.5 sm:py-1 bg-gradient-to-r from-blue-700 to-blue-900 text-white rounded-lg hover:from-blue-600 hover:to-blue-800 transition-all font-medium text-sm sm:text-base shadow-lg border border-blue-600/30 hover:border-blue-500/50"
-                    >
-                        Fechar
-                    </button>
-                </div>
-            </div>
+            </Modal>
 
             {/* Edit User Modal */}
             <EditUserModal
@@ -228,6 +207,6 @@ export default function UserListModal({ isOpen, onClose }) {
                 user={editingUser}
                 onUserUpdated={handleUserUpdated}
             />
-        </div>
+        </>
     );
 }

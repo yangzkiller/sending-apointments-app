@@ -7,10 +7,14 @@ import {
 } from "lucide-react";
 import UserListModal from "./UserListModal";
 import InstitutionListModal from "./InstitutionListModal";
+import CreateInstitutionModal from "./CreateInstitutionModal";
+import CreateUserModal from "./CreateUserModal";
 
 export default function AdminHome() {
     const [isUserModalOpen, setIsUserModalOpen] = useState(false);
     const [isInstitutionModalOpen, setIsInstitutionModalOpen] = useState(false);
+    const [isCreateInstitutionModalOpen, setIsCreateInstitutionModalOpen] = useState(false);
+    const [isCreateUserModalOpen, setIsCreateUserModalOpen] = useState(false);
 
     const adminCards = [
         {
@@ -38,22 +42,22 @@ export default function AdminHome() {
             title: "Criar Usuário",
             description: "Adicione novos usuários ao sistema",
             icon: UserPlus,
-            color: "from-slate-700 to-slate-800",
-            hoverColor: "hover:from-slate-800 hover:to-slate-900",
-            stats: "Em breve",
-            action: () => {},
-            disabled: true,
+            color: "from-blue-700 to-indigo-800",
+            hoverColor: "hover:from-blue-600 hover:to-indigo-700",
+            stats: "Adicionar",
+            action: () => setIsCreateUserModalOpen(true),
+            disabled: false,
         },
         {
             id: 4,
             title: "Criar Instituição",
             description: "Cadastre novas instituições no sistema",
             icon: Plus,
-            color: "from-slate-600 to-slate-700",
-            hoverColor: "hover:from-slate-700 hover:to-slate-800",
-            stats: "Em breve",
-            action: () => {},
-            disabled: true,
+            color: "from-relative p-6 bg-gradient-to-r from-blue-900 via-gray-850 to-light-black text-white rounded-t-2xl border-b border-blue-800",
+            hoverColor: "hover:from-cyan-600 hover:to-blue-700",
+            stats: "Adicionar",
+            action: () => setIsCreateInstitutionModalOpen(true),
+            disabled: false,
         },
     ];
 
@@ -82,11 +86,9 @@ export default function AdminHome() {
                                 transition-all duration-300
                             `} />
                             
-                            {/* Decorative circles */}
                             <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/5 rounded-full blur-2xl" />
                             <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-cyan-400/10 rounded-full blur-2xl" />
                             
-                            {/* Content */}
                             <div className="relative p-8 text-white">
                                 <div className="flex items-start justify-between mb-4">
                                     <div className="p-3 bg-white/10 rounded-xl backdrop-blur-sm group-hover:bg-white/20 transition-all border border-white/20">
@@ -126,6 +128,24 @@ export default function AdminHome() {
             <InstitutionListModal 
                 isOpen={isInstitutionModalOpen}
                 onClose={() => setIsInstitutionModalOpen(false)}
+            />
+
+            <CreateInstitutionModal
+                isOpen={isCreateInstitutionModalOpen}
+                onClose={() => setIsCreateInstitutionModalOpen(false)}
+                onInstitutionCreated={() => {
+                    // Optionally refresh the institution list if it's open
+                    setIsCreateInstitutionModalOpen(false);
+                }}
+            />
+
+            <CreateUserModal
+                isOpen={isCreateUserModalOpen}
+                onClose={() => setIsCreateUserModalOpen(false)}
+                onUserCreated={() => {
+                    // Optionally refresh the user list if it's open
+                    setIsCreateUserModalOpen(false);
+                }}
             />
         </div>
     );

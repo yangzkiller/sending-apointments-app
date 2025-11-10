@@ -21,7 +21,10 @@ Route::middleware(['auth', 'check.active'])->group(function () {
     // Admin routes
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/users', [UserController::class, 'index'])->name('users.index');
+        Route::post('/users', [UserController::class, 'store'])->name('users.store');
         Route::put('/users/{id}', [UserController::class, 'update'])->name('users.update');
         Route::get('/institutions', [InstitutionController::class, 'index'])->name('institutions.index');
+        Route::post('/institutions', [InstitutionController::class, 'store'])->name('institutions.store');
+        Route::put('/institutions/{id}', [InstitutionController::class, 'update'])->name('institutions.update');
     });
 });

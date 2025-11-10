@@ -81,6 +81,57 @@ class UserController extends Controller
     }
 
     /**
+     * Create a new user.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function store(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
+            'password' => ['required', 'string', 'min:8'],
+            'role' => ['required', 'integer', 'in:0,1,2'],
+            'active' => ['required', 'boolean'],
+            'id_institution' => ['nullable', 'exists:institutions,id'],
+        ]);
+
+        // Only the SENDER (role = 0) can have an institution. Otherwise, id_institution is forced to null.
+        if ($validated['role'] !== 0) {
+            $validated['id_institution'] = null;
+        }
+
+        // Create user with hashed password
+        $user = User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'role' => $validated['role'],
+            'active' => $validated['active'],
+            'id_institution' => $validated['id_institution'],
+        ]);
+
+        Log::create([
+            'action' => 'create_user',
+            'description' => "Admin criou novo usuário {$user->name} (ID: {$user->id}).",
+            'id_user' => $request->user()->id,
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Usuário criado com sucesso!',
+            'data' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->role,
+                'active' => $user->active,
+            ]
+        ], 201);
+    }
+
+    /**
      * Update a user's information.
      *
      * @param Request $request
@@ -99,6 +150,10 @@ class UserController extends Controller
             'active' => ['required', 'boolean'],
             'id_institution' => ['nullable', 'exists:institutions,id'],
         ]);
+        // Update: Only the SENDER (role = 0) can have an institution. Otherwise, id_institution is forced to null.
+        if ($validated['role'] !== 0) {
+            $validated['id_institution'] = null;
+        }
 
         // Prepare data for update
         $dataToUpdate = [
