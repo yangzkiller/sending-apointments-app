@@ -11,15 +11,6 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        
-        User::create([
-            'name' => 'Matheus Barros',
-            'email' => 'matheus.barros@grupoasas.com.br',
-            'password' => Hash::make('password'),
-            'role' => Roles::ADMINISTRATOR->value,
-            'active' => 1,
-            'id_institution' => null,
-        ]);
 
         User::create([
             'name' => 'User Admin',
