@@ -16,7 +16,7 @@ export default function CreateInstitutionModal({ isOpen, onClose, onInstitutionC
         const { name, value, type, checked } = e.target;
         setFormData((prev) => ({
             ...prev,
-            [name]: type === "checkbox" ? checked : value,
+            [name]: type === "checkbox" ? checked : value.toUpperCase(),
         }));
     };
 
@@ -31,20 +31,20 @@ export default function CreateInstitutionModal({ isOpen, onClose, onInstitutionC
             };
 
             await api.post(route("admin.institutions.store"), dataToSend);
-            
+
             toast.success("Instituição criada com sucesso!");
-            
+
             // Reset form
             setFormData({
                 name: "",
                 active: true,
             });
-            
+
             onInstitutionCreated();
             onClose();
         } catch (error) {
             console.error("Erro ao criar instituição:", error);
-            
+
             if (error.response?.data?.errors) {
                 const errors = error.response.data.errors;
                 Object.values(errors).flat().forEach((msg) => toast.error(msg));
@@ -66,10 +66,10 @@ export default function CreateInstitutionModal({ isOpen, onClose, onInstitutionC
     };
 
     return (
-        <Modal 
-            isOpen={isOpen} 
-            onClose={handleClose} 
-            title="Criar Nova Instituição" 
+        <Modal
+            isOpen={isOpen}
+            onClose={handleClose}
+            title="Criar Nova Instituição"
             className="max-w-2xl"
             maxHeight="max-h-[85vh]"
         >
@@ -122,7 +122,7 @@ export default function CreateInstitutionModal({ isOpen, onClose, onInstitutionC
                         <div className="flex-1">
                             <h4 className="text-sm font-semibold text-cyan-200 mb-1">Sobre Instituições</h4>
                             <p className="text-xs text-gray-400 leading-relaxed">
-                                As instituições são usadas para organizar e agrupar usuários no sistema. 
+                                As instituições são usadas para organizar e agrupar usuários no sistema.
                                 Cada usuário pode estar vinculado a uma instituição.
                             </p>
                         </div>

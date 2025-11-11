@@ -44,18 +44,22 @@ export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) 
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
-        
-        // Se o role mudar e não for SENDER (0), limpar instituição
+
         if (name === "role" && parseInt(value) !== 0) {
             setFormData((prev) => ({
                 ...prev,
                 [name]: type === "checkbox" ? checked : value,
-                id_institution: "", // Limpa a instituição
+                id_institution: "",
             }));
         } else {
             setFormData((prev) => ({
                 ...prev,
-                [name]: type === "checkbox" ? checked : value,
+                [name]:
+                    type === "checkbox"
+                        ? checked
+                        : name === "name"
+                        ? value.toUpperCase()
+                        : value,
             }));
         }
     };
@@ -79,13 +83,13 @@ export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) 
             }
 
             await api.put(route("admin.users.update", user.id), dataToSend);
-            
+
             toast.success("Usuário atualizado com sucesso!");
             onUserUpdated();
             onClose();
         } catch (error) {
             console.error("Erro ao atualizar usuário:", error);
-            
+
             if (error.response?.data?.errors) {
                 const errors = error.response.data.errors;
                 Object.values(errors).flat().forEach((msg) => toast.error(msg));
@@ -109,10 +113,10 @@ export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) 
     if (!user) return null;
 
     return (
-        <Modal 
-            isOpen={isOpen} 
-            onClose={onClose} 
-            title="Editar Usuário" 
+        <Modal
+            isOpen={isOpen}
+            onClose={onClose}
+            title="Editar Usuário"
             className="max-w-3xl"
             maxHeight="max-h-[75vh]"
         >

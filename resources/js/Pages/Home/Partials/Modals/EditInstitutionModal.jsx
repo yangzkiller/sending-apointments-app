@@ -25,7 +25,7 @@ export default function EditInstitutionModal({ isOpen, onClose, institution, onI
         const { name, value, type, checked } = e.target;
         setFormData((prev) => ({
             ...prev,
-            [name]: type === "checkbox" ? checked : value,
+            [name]: type === "checkbox" ? checked : value.toUpperCase(),
         }));
     };
 
@@ -40,13 +40,13 @@ export default function EditInstitutionModal({ isOpen, onClose, institution, onI
             };
 
             await api.put(route("admin.institutions.update", institution.id), dataToSend);
-            
+
             toast.success("Instituição atualizada com sucesso!");
             onInstitutionUpdated();
             onClose();
         } catch (error) {
             console.error("Erro ao atualizar instituição:", error);
-            
+
             if (error.response?.data?.errors) {
                 const errors = error.response.data.errors;
                 Object.values(errors).flat().forEach((msg) => toast.error(msg));
@@ -61,15 +61,14 @@ export default function EditInstitutionModal({ isOpen, onClose, institution, onI
     if (!institution) return null;
 
     return (
-        <Modal 
-            isOpen={isOpen} 
-            onClose={onClose} 
-            title="Editar Instituição" 
+        <Modal
+            isOpen={isOpen}
+            onClose={onClose}
+            title="Editar Instituição"
             className="max-w-2xl"
             maxHeight="max-h-[85vh]"
         >
             <form onSubmit={handleSubmit} className="space-y-4">
-                {/* Name */}
                 <div className="space-y-2">
                     <label className="flex items-center gap-2 text-sm font-medium text-gray-200">
                         <Building2 className="w-4 h-4 text-cyan-400" />
@@ -86,7 +85,6 @@ export default function EditInstitutionModal({ isOpen, onClose, institution, onI
                     />
                 </div>
 
-                {/* Status Active */}
                 <div className="flex items-center justify-between p-4 bg-slate-800/30 rounded-xl border border-slate-600/30">
                     <div>
                         <label className="text-sm font-medium text-gray-200 cursor-pointer">
@@ -107,8 +105,6 @@ export default function EditInstitutionModal({ isOpen, onClose, institution, onI
                         <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-cyan-800 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-600"></div>
                     </label>
                 </div>
-
-                {/* Institution Info Card */}
                 <div className="p-4 bg-gradient-to-r from-slate-800/50 to-slate-700/50 rounded-xl border border-slate-600/30">
                     <p className="text-xs text-gray-400 mb-2">Informações:</p>
                     <div className="space-y-1 text-sm">
@@ -127,7 +123,6 @@ export default function EditInstitutionModal({ isOpen, onClose, institution, onI
                     </div>
                 </div>
 
-                {/* Buttons */}
                 <div className="flex flex-col sm:flex-row gap-3 pt-2">
                     <button
                         type="button"

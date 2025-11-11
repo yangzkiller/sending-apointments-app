@@ -36,18 +36,25 @@ export default function CreateUserModal({ isOpen, onClose, onUserCreated }) {
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
-        
-        // If the role changes and is not SENDER (0), clear the institution
+
         if (name === "role" && parseInt(value) !== 0) {
             setFormData((prev) => ({
                 ...prev,
-                [name]: type === "checkbox" ? checked : value,
-                id_institution: "",
+                [name]:
+                    type === "checkbox"
+                        ? checked
+                        : value,
+                    id_institution: "",
             }));
         } else {
             setFormData((prev) => ({
                 ...prev,
-                [name]: type === "checkbox" ? checked : value,
+                [name]:
+                    type === "checkbox"
+                        ? checked
+                        : name === "name"
+                        ? value.toUpperCase()
+                        : value,
             }));
         }
     };
@@ -67,9 +74,9 @@ export default function CreateUserModal({ isOpen, onClose, onUserCreated }) {
             };
 
             await api.post(route("admin.users.store"), dataToSend);
-            
+
             toast.success("Usuário criado com sucesso!");
-            
+
             // Reset form
             setFormData({
                 name: "",
@@ -79,12 +86,12 @@ export default function CreateUserModal({ isOpen, onClose, onUserCreated }) {
                 active: true,
                 id_institution: "",
             });
-            
+
             onUserCreated();
             onClose();
         } catch (error) {
             console.error("Erro ao criar usuário:", error);
-            
+
             if (error.response?.data?.errors) {
                 const errors = error.response.data.errors;
                 Object.values(errors).flat().forEach((msg) => toast.error(msg));
@@ -122,10 +129,10 @@ export default function CreateUserModal({ isOpen, onClose, onUserCreated }) {
     const canSelectInstitution = parseInt(formData.role) === 0;
 
     return (
-        <Modal 
-            isOpen={isOpen} 
-            onClose={handleClose} 
-            title="Criar Novo Usuário" 
+        <Modal
+            isOpen={isOpen}
+            onClose={handleClose}
+            title="Criar Novo Usuário"
             className="max-w-3xl"
             maxHeight="max-h-[85vh]"
         >
