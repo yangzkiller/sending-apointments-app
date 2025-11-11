@@ -10,31 +10,43 @@ export default function UserDropdown({ user, onLogout, onChangePassword, mobile 
         const handleClickOutside = (e) => {
             if (ref.current && !ref.current.contains(e.target)) setOpen(false);
         };
-        
+
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
     if (mobile) {
         return (
-            <div className="flex flex-col text-sm text-white cursor-pointer">
-                <div className="flex items-center justify-between mb-2">
-                    <span className="font-medium">{user?.name || "Usuário Defult"}</span>
-                </div>
+            <div ref={ref} className="relative">
                 <button
-                    onClick={onChangePassword}
-                    className="flex items-center gap-2 px-2 py-2 rounded-md hover:bg-gray-800 transition-colors"
+                    onClick={() => setOpen(!open)}
+                    className="flex items-center space-x-2 cursor-pointer"
                 >
-                    <KeyRound size={16} /> Mudar Senha
+                    <span className="font-medium">{user?.name || "Usuário"}</span>
+                    <ChevronDown
+                        size={16}
+                        className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+                    />
                 </button>
-                <button
-                    onClick={onLogout}
-                    className="flex items-center gap-2 px-2 py-2 rounded-md hover:bg-gray-800 text-red-400 transition-colors"
+                <Dropdown
+                    open={open}
+                    className="w-48 bg-gray-800 border border-gray-700"
                 >
-                    <LogOut size={16} /> Logout
-                </button>
+                    <button
+                        onClick={onChangePassword}
+                        className="flex items-center gap-2 px-2 py-2 rounded-md hover:bg-gray-800 transition-colors"
+                    >
+                        <KeyRound size={16} /> Mudar Senha
+                    </button>
+                    <button
+                        onClick={onLogout}
+                        className="flex items-center gap-2 px-2 py-2 rounded-md hover:bg-gray-800 text-red-400 transition-colors"
+                    >
+                        <LogOut size={16} /> Sair
+                    </button>
+                </Dropdown>
             </div>
-        );
+        )
     }
 
     return (

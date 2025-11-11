@@ -40,9 +40,12 @@ class AuthenticationController extends Controller
             ], 401);
         }
 
+        $request->session()->regenerate();
+
+        Auth::logoutOtherDevices($request->password);
+
         $user = Auth::user();
 
-        // Check if user is active
         if (!$user->active) {
             Auth::logout();
             return response()->json([

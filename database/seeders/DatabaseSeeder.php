@@ -6,6 +6,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Database\Seeders\InstitutionSeeder;
 use Database\Seeders\UserSeeder;
+use Database\Seeders\SpreadsheetSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -19,6 +20,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             InstitutionSeeder::class,
             UserSeeder::class,
+            SpreadsheetSeeder::class,
         ]);
     }
 }
