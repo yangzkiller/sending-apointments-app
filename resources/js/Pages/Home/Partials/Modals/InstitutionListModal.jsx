@@ -4,7 +4,7 @@ import { route } from "ziggy-js";
 import { toast } from "react-toastify";
 import api from "@/axios";
 import Modal from "@/Components/Generals/Modal";
-import EditInstitutionModal from "./EditInstitutionModal";
+import EditInstitutionModal from "./Modals/EditInstitutionModal";
 
 export default function InstitutionListModal({ isOpen, onClose }) {
     const [institutions, setInstitutions] = useState([]);
@@ -68,9 +68,9 @@ export default function InstitutionListModal({ isOpen, onClose }) {
 
     return (
         <>
-        <Modal 
-            isOpen={isOpen} 
-            onClose={onClose} 
+        <Modal
+            isOpen={isOpen}
+            onClose={onClose}
             title="Gerenciar Instituições"
             className="max-w-3xl"
             maxHeight="max-h-[75vh]"
@@ -127,7 +127,7 @@ export default function InstitutionListModal({ isOpen, onClose }) {
                                 className="w-full pl-9 pr-3 py-1 text-sm bg-slate-700 border border-slate-600 text-white placeholder-slate-400 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all hover:border-blue-400/50"
                             />
                         </div>
-                        
+
                         <div className="relative">
                             <ArrowUpDown className="absolute left-2.5 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
                             <select
@@ -203,8 +203,8 @@ export default function InstitutionListModal({ isOpen, onClose }) {
                                                     <div className="font-bold text-white text-[12px]">Usuários {institution.users_count}</div>
                                                 </div>
 
-                                                {/* Edit button */} 
-                                                <button 
+                                                {/* Edit button */}
+                                                <button
                                                     onClick={() => handleEditInstitution(institution)}
                                                     className="flex flex-col items-center justify-center bg-cyan-600/15 hover:bg-cyan-600/25 border border-cyan-500/30 rounded-lg py-2.5 text-cyan-200 hover:text-cyan-100 transition-colors active:scale-95 cursor-pointer"
                                                 >
@@ -219,7 +219,7 @@ export default function InstitutionListModal({ isOpen, onClose }) {
                                                     <div className="font-semibold text-white text-[10px] mt-0.5">{institution.created_at_full}</div>
                                                 </div>
 
-                                                
+
                                             </div>
                                         </div>
                                     </div>

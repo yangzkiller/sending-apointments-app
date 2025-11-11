@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class CheckUserActive
+class CheckUserActiveMiddleware
 {
     /**
      * Handle an incoming request.
@@ -18,13 +18,13 @@ class CheckUserActive
     {
         if (Auth::check()) {
             $user = Auth::user();
-            
+
             // If user is inactive, logout and redirect
             if (!$user->active) {
                 Auth::logout();
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
-                
+
                 return response()->json([
                     'message' => 'Sua conta foi desativada. Entre em contato com o administrador.',
                     'redirect' => route('login')

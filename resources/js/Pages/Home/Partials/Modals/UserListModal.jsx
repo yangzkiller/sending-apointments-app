@@ -3,7 +3,7 @@ import { Users, Search, Mail, Building2, Shield, UserCheck, UserX, Loader2, Edit
 import { route } from "ziggy-js";
 import { toast } from "react-toastify";
 import api from "@/axios";
-import EditUserModal from "./EditUserModal";
+import EditUserModal from "./Modals/EditUserModal";
 import Modal from "@/Components/Generals/Modal";
 
 export default function UserListModal({ isOpen, onClose }) {
@@ -67,9 +67,9 @@ export default function UserListModal({ isOpen, onClose }) {
 
     return (
         <>
-            <Modal 
-                isOpen={isOpen} 
-                onClose={onClose} 
+            <Modal
+                isOpen={isOpen}
+                onClose={onClose}
                 title="Gerenciar Usuários"
                 className="max-w-3xl"
                 maxHeight="max-h-[75vh]"
@@ -174,20 +174,20 @@ export default function UserListModal({ isOpen, onClose }) {
                                                 <Edit className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-300 group-hover/btn:text-blue-200 transition-colors" />
                                             </button>
                                         </div>
-                                        
+
                                         <div className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm">
                                             <div className="flex items-center gap-1.5 sm:gap-2 text-gray-300">
                                                 <Mail className="w-3 h-3 sm:w-4 sm:h-4 text-teal-400 flex-shrink-0" />
                                                 <span className="truncate">{user.email}</span>
                                             </div>
-                                            
+
                                             {user.institution && (
                                                 <div className="flex items-center gap-1.5 sm:gap-2 text-gray-300">
                                                     <Building2 className="w-3 h-3 sm:w-4 sm:h-4 text-cyan-400 flex-shrink-0" />
                                                     <span className="truncate">{user.institution.name}</span>
                                                 </div>
                                             )}
-                                            
+
                                             <div className="text-[10px] sm:text-xs text-gray-500 mt-1 sm:mt-2">
                                                 Cadastrado em {user.created_at}
                                             </div>

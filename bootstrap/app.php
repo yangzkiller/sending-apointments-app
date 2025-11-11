@@ -4,7 +4,6 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\HandleInertiaRequests;
-use App\Http\Middleware\CheckUserActive;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -20,7 +19,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'receiver' => \App\Http\Middleware\ReceiverMiddleware::class,
             'sender' => \App\Http\Middleware\SenderMiddleware::class,
-            'check.active' => \App\Http\Middleware\CheckUserActive::class,
+            'check.active' => \App\Http\Middleware\CheckUserActiveMiddleware::class,
+            'administrator' => \App\Http\Middleware\AdministratorMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
