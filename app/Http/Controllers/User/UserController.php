@@ -94,22 +94,19 @@ class UserController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8'],
             'role' => ['required', 'integer', 'in:0,1,2'],
-            'active' => ['required', 'boolean'],
             'id_institution' => ['nullable', 'exists:institutions,id'],
         ]);
 
-        // Only the SENDER (role = 0) can have an institution. Otherwise, id_institution is forced to null.
         if ($validated['role'] !== 0) {
             $validated['id_institution'] = null;
         }
 
-        // Create user with hashed password
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'role' => $validated['role'],
-            'active' => $validated['active'],
+            'active' => 1,
             'id_institution' => $validated['id_institution'],
         ]);
 
