@@ -25,7 +25,7 @@ export default function Home() {
         try {
             await api.post(route("authentication.logout"));
             toast.info(`Até breve, ${auth.user.name}!`);
-            setTimeout(() => router.visit(route("authentication.index")), 1500);
+            setTimeout(() => router.visit(route("authentication.index")), 500);
         } catch (err) {
             console.error("Logout failed:", err);
             toast.error("Erro ao sair. Tente novamente.");
