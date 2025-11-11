@@ -4,7 +4,7 @@ import { route } from "ziggy-js";
 import { toast } from "react-toastify";
 import api from "@/axios";
 import Modal from "@/Components/Generals/Modal";
-import EditInstitutionModal from "./Modals/EditInstitutionModal";
+import EditInstitutionModal from "@/Pages/Home/Partials/Modals/EditInstitutionModal";
 
 export default function InstitutionListModal({ isOpen, onClose }) {
     const [institutions, setInstitutions] = useState([]);

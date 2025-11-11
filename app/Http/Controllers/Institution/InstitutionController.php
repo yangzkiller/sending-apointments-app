@@ -36,7 +36,7 @@ class InstitutionController extends Controller
             'data' => $institutions
         ], 200);
     }
-    
+
     /**
      * Retrieve all institutions with their related spreadsheets (excluding those with status 0).
      *
@@ -103,6 +103,51 @@ class InstitutionController extends Controller
         return response()->json([
             'message' => 'Status atualizado com sucesso',
             'institution' => $institution,
+        ], 200);
+    }
+
+    /**
+     * Create a new institution.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function store(): JsonResponse
+    {
+        $validated = request()->validate([
+            'name' => 'required|string|max:255|unique:institutions,name',
+            'active' => 'required|boolean',
+        ]);
+
+        $institution = Institution::create($validated);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Instituição criada com sucesso',
+            'data' => $institution
+        ], 201);
+    }
+
+    /**
+     * Update an institution.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function update($id): JsonResponse
+    {
+        $institution = Institution::findOrFail($id);
+
+        $validated = request()->validate([
+            'name' => 'required|string|max:255|unique:institutions,name,' . $id,
+            'active' => 'required|boolean',
+        ]);
+
+        $institution->update($validated);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Instituição atualizada com sucesso',
+            'data' => $institution
         ], 200);
     }
 }

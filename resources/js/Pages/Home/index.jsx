@@ -5,11 +5,9 @@ import { route } from "ziggy-js";
 import { toast } from "react-toastify";
 import SenderHome from "@/Pages/Home/Partials/Homes/SenderHome";
 import ReceiverHome from "@/Pages/Home/Partials/Homes/ReceiverHome";
+import AdminHome from "@/Pages/Home/Partials/Homes/AdminHome";
 import AuthenticationLayout from "@/Components/Layouts/AuthenticationLayout";
 import ChangePasswordModal from "@/Pages/Home/Partials/Modals/ChangePasswordModal";
-import SenderHome from "@/Pages/Home/Partials/SenderHome";
-import AdminHome from "@/Pages/Home/Partials/AdminHome";
-import ChangePasswordModal from "@/Pages/Authentication/Partials/ChangePasswordModal";
 
 export default function Home() {
     const { auth } = usePage().props;

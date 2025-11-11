@@ -3,7 +3,7 @@ import { Users, Search, Mail, Building2, Shield, UserCheck, UserX, Loader2, Edit
 import { route } from "ziggy-js";
 import { toast } from "react-toastify";
 import api from "@/axios";
-import EditUserModal from "./Modals/EditUserModal";
+import EditUserModal from "@/Pages/Home/Partials/Modals/EditUserModal";
 import Modal from "@/Components/Generals/Modal";
 
 export default function UserListModal({ isOpen, onClose }) {

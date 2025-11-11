@@ -1,14 +1,14 @@
 import { useState } from "react";
-import { 
-    Users, 
-    Building2, 
+import {
+    Users,
+    Building2,
     UserPlus,
     Plus
 } from "lucide-react";
-import UserListModal from "./UserListModal";
-import InstitutionListModal from "./InstitutionListModal";
-import CreateInstitutionModal from "./CreateInstitutionModal";
-import CreateUserModal from "./CreateUserModal";
+import UserListModal from "@/Pages/Home/Partials/Modals/UserListModal";
+import InstitutionListModal from "@/Pages/Home/Partials/Modals/InstitutionListModal";
+import CreateInstitutionModal from "@/Pages/Home/Partials/Modals/CreateInstitutionModal";
+import CreateUserModal from "@/Pages/Home/Partials/Modals/CreateUserModal";
 
 export default function AdminHome() {
     const [isUserModalOpen, setIsUserModalOpen] = useState(false);
@@ -73,7 +73,7 @@ export default function AdminHome() {
                             onClick={card.action}
                             disabled={card.disabled}
                             className={`
-                                relative overflow-hidden rounded-2xl shadow-xl 
+                                relative overflow-hidden rounded-2xl shadow-xl
                                 transform transition-all duration-300 hover:scale-105 hover:shadow-2xl
                                 ${card.disabled ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}
                                 group border border-slate-700
@@ -81,14 +81,14 @@ export default function AdminHome() {
                         >
                             {/* Gradient Background */}
                             <div className={`
-                                absolute inset-0 bg-gradient-to-br ${card.color} 
+                                absolute inset-0 bg-gradient-to-br ${card.color}
                                 ${!card.disabled && card.hoverColor}
                                 transition-all duration-300
                             `} />
-                            
+
                             <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/5 rounded-full blur-2xl" />
                             <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-cyan-400/10 rounded-full blur-2xl" />
-                            
+
                             <div className="relative p-8 text-white">
                                 <div className="flex items-start justify-between mb-4">
                                     <div className="p-3 bg-white/10 rounded-xl backdrop-blur-sm group-hover:bg-white/20 transition-all border border-white/20">
@@ -98,11 +98,11 @@ export default function AdminHome() {
                                         {card.stats}
                                     </span>
                                 </div>
-                                
+
                                 <h3 className="text-2xl font-bold mb-2">
                                     {card.title}
                                 </h3>
-                                
+
                                 <p className="text-white/80 text-sm leading-relaxed">
                                     {card.description}
                                 </p>
@@ -120,12 +120,12 @@ export default function AdminHome() {
             </div>
 
             {/* Modals */}
-            <UserListModal 
+            <UserListModal
                 isOpen={isUserModalOpen}
                 onClose={() => setIsUserModalOpen(false)}
             />
-            
-            <InstitutionListModal 
+
+            <InstitutionListModal
                 isOpen={isInstitutionModalOpen}
                 onClose={() => setIsInstitutionModalOpen(false)}
             />
