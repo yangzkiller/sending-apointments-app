@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
 import { Link } from "@inertiajs/react";
 import { route } from "ziggy-js";
+import { Menu, X, Home } from "lucide-react";
 import Logo from "@/Components/Generals/Logo";
 import UserDropdown from "@/Components/Layouts/Navbar/Partials/UserDropdown";
 
@@ -21,12 +21,13 @@ export default function Navbar({ user, onLogout, onChangePassword }) {
                     <div className="hidden md:flex items-center space-x-6">
                     <Link
                         href={route("home")}
-                        className={`text-sm font-medium transition-all duration-200 transform ${
+                        className={`flex items-center gap-2 text-sm font-medium transition-all duration-200 transform ${
                             isActive("home")
                                 ? "text-[#13a3f1] scale-110"
                                 : "text-gray-300 hover:text-white hover:scale-105"
                         }`}
                     >
+                        <Home className="w-4 h-4" />
                         HOME
                     </Link>
                     </div>
@@ -55,13 +56,14 @@ export default function Navbar({ user, onLogout, onChangePassword }) {
                     <div className="px-4 py-3 space-y-3">
                         <Link
                             href={route("home")}
-                            className={`block text-sm font-medium px-2 py-2 rounded-md ${
+                            className={`flex items-center gap-2 text-sm font-medium px-2 py-2 rounded-md ${
                                 isActive("home")
                                     ? "text-[#13a3f1] bg-gray-800"
                                     : "text-gray-300 hover:text-white hover:bg-gray-800"
                             }`}
                         >
-                            Home
+                            <Home className="w-4 h-4" />
+                            HOME
                         </Link>
 
                         <UserDropdown

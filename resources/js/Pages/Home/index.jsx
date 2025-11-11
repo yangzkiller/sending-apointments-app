@@ -3,9 +3,11 @@ import { useState,useEffect } from "react";
 import { usePage, router } from "@inertiajs/react";
 import { route } from "ziggy-js";
 import { toast } from "react-toastify";
+import SenderHome from "@/Pages/Home/Partials/Homes/SenderHome";
+import ReceiverHome from "@/Pages/Home/Partials/Homes/ReceiverHome";
+import AdminHome from "@/Pages/Home/Partials/Homes/AdminHome";
 import AuthenticationLayout from "@/Components/Layouts/AuthenticationLayout";
-import SenderHome from "@/Pages/Home/Partials/SenderHome";
-import ChangePasswordModal from "@/Pages/Authentication/Partials/ChangePasswordModal";
+import ChangePasswordModal from "@/Pages/Home/Partials/Modals/ChangePasswordModal";
 
 export default function Home() {
     const { auth } = usePage().props;
@@ -24,7 +26,7 @@ export default function Home() {
         try {
             await api.post(route("authentication.logout"));
             toast.info(`Até breve, ${auth.user.name}!`);
-            setTimeout(() => router.visit(route("authentication.index")), 1500);
+            setTimeout(() => router.visit(route("authentication.index")), 500);
         } catch (err) {
             console.error("Logout failed:", err);
             toast.error("Erro ao sair. Tente novamente.");
@@ -47,8 +49,8 @@ export default function Home() {
         >
             <div className="mt-24 px-6 w-full max-w-5xl mx-auto space-y-6">
                 {auth.user.role === 0 && <SenderHome />}
-                {auth.user.role === "admin" && <p>Admin area</p>}
-                {auth.user.role === "receiver" && <p>Receiver area</p>}
+                {auth.user.role === 1 && <ReceiverHome />}
+                {auth.user.role === 2 && <AdminHome />}
             </div>
 
             <ChangePasswordModal

@@ -1,16 +1,15 @@
 import { useEffect, useState } from "react";
 import { usePage } from "@inertiajs/react";
 import { route } from "ziggy-js";
-import * as XLSX from "xlsx";
 import { toast } from "react-toastify";
+import * as XLSX from "xlsx";
 import api from "@/axios";
-import DownloadTemplateCard from "@/Pages/Home/Partials/DownloadTemplateCard";
-import UploadSpreadsheetCard from "@/Pages/Home/Partials/UploadSpreadsheetCard";
+import DownloadTemplateCard from "@/Pages/Home/Partials/Cards/DownloadTemplateCard";
+import UploadSpreadsheetCard from "@/Pages/Home/Partials/Cards/UploadSpreadsheetCard";
 
 export default function SenderHome() {
     const { auth } = usePage().props;
     const institution = auth?.user?.institution || "default";
-
     const [loading, setLoading] = useState(false);
     const [lastImport, setLastImport] = useState(null);
 
@@ -29,7 +28,7 @@ export default function SenderHome() {
 
     const handleDownload = () => {
         const date = new Date().toISOString().split("T")[0];
-        const safeInstitution = institution.replace(/\s+/g, "_");
+        const safeInstitution = institution.toLowerCase().replace(/\s+/g, "_");
         const fileName = `default-${safeInstitution}-${date}.xlsx`;
 
         const link = document.createElement("a");

@@ -41,7 +41,19 @@ class AuthenticationController extends Controller
         }
 
         $request->session()->regenerate();
+
+        Auth::logoutOtherDevices($request->password);
+
         $user = Auth::user();
+
+        if (!$user->active) {
+            Auth::logout();
+            return response()->json([
+                'message' => 'Sua conta está inativa. Entre em contato com o administrador.',
+            ], 403);
+        }
+
+        $request->session()->regenerate();
 
         return response()->json([
             'message' => 'Login realizado com sucesso.',

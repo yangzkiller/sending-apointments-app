@@ -8,18 +8,19 @@ export default function Modal({
   children,
   showClose = true,
   className = "",
+  maxHeight = "max-h-[80vh]",
 }) {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center">
+        <div className="fixed inset-0 z-[100000] flex items-center justify-center" onClick={onClose}>
             <div
                 className="absolute inset-0 bg-black/20 backdrop-blur-sm"
-                onClick={onClose}
             />
 
             <div
-                className={`relative z-[10000] w-full md:w-110 lg:w-150 3xl:w-300 [@media(min-width:2560px)]:w-[60rem] mx-4 ${className}`}
+                className={`relative z-[100001] w-full md:w-110 lg:w-150 3xl:w-300 [@media(min-width:2560px)]:w-[60rem] mx-4 ${maxHeight} overflow-y-auto ${className}`}
+                onClick={(e) => e.stopPropagation()}
             >
                 <FadeContent blur duration={400} easing="ease-out" initialOpacity={0}>
                 <div className="relative bg-gradient-to-b from-black via-gray-900 to-gray-800 border border-[#1382be9b] rounded-xl shadow-lg text-white p-6">

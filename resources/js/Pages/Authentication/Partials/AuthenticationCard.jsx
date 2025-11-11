@@ -1,11 +1,11 @@
+import { useState } from 'react';
+import { Mail, Lock, Loader2 } from 'lucide-react';
+import ForgotPasswordModal from '@/Pages/Authentication/Partials/ForgotPasswordModal';
 import FadeContent from '@/Components/ReactBits/Animations/FadeContent';
 import Card from '@/Components/Generals/Card';
 import Logo from '@/Components/Generals/Logo';
 import FormField from '@/Components/Generals/FormField';
 import Button from '@/Components/Generals/Button';
-import ForgotPasswordModal from '@/Pages/Authentication/Partials/ForgotPasswordModal';
-import { Mail, Lock, Loader2 } from 'lucide-react';
-import { useState } from 'react';
 
 export default function AuthenticationCard({
     email,

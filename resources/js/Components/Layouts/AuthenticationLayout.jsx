@@ -9,11 +9,11 @@ export default function AuthenticationLayout({ children, user, onLogout, onChang
                 onChangePassword={onChangePassword}
             />
 
-            <main className="relative z-10 flex items-center justify-center w-full flex-1 px-4 mt-16">
+            <main className="relative z-10 flex items-center justify-center w-full flex-1 px-4">
                 {children}
             </main>
 
-            <footer className="relative z-10 mb-4 text-gray-400 text-sm text-center">
+            <footer className="relative z-0 mb-4 text-gray-400 text-sm text-center">
                 © {new Date().getFullYear()} Grupo ASAS. Todos os direitos reservados.
             </footer>
         </LayoutContent>
