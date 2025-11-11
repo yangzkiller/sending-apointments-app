@@ -36,18 +36,25 @@ export default function CreateUserModal({ isOpen, onClose, onUserCreated }) {
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
-        
-        // If the role changes and is not SENDER (0), clear the institution
+
         if (name === "role" && parseInt(value) !== 0) {
             setFormData((prev) => ({
                 ...prev,
-                [name]: type === "checkbox" ? checked : value,
-                id_institution: "",
+                [name]:
+                    type === "checkbox"
+                        ? checked
+                        : value,
+                    id_institution: "",
             }));
         } else {
             setFormData((prev) => ({
                 ...prev,
-                [name]: type === "checkbox" ? checked : value,
+                [name]:
+                    type === "checkbox"
+                        ? checked
+                        : name === "name"
+                        ? value.toUpperCase()
+                        : value,
             }));
         }
     };
@@ -67,10 +74,9 @@ export default function CreateUserModal({ isOpen, onClose, onUserCreated }) {
             };
 
             await api.post(route("admin.users.store"), dataToSend);
-            
+
             toast.success("Usuário criado com sucesso!");
             
-            // Reset form
             setFormData({
                 name: "",
                 email: "",
@@ -79,12 +85,12 @@ export default function CreateUserModal({ isOpen, onClose, onUserCreated }) {
                 active: true,
                 id_institution: "",
             });
-            
+
             onUserCreated();
             onClose();
         } catch (error) {
             console.error("Erro ao criar usuário:", error);
-            
+
             if (error.response?.data?.errors) {
                 const errors = error.response.data.errors;
                 Object.values(errors).flat().forEach((msg) => toast.error(msg));
@@ -97,7 +103,6 @@ export default function CreateUserModal({ isOpen, onClose, onUserCreated }) {
     };
 
     const handleClose = () => {
-        // Reset form when closing
         setFormData({
             name: "",
             email: "",
@@ -118,19 +123,17 @@ export default function CreateUserModal({ isOpen, onClose, onUserCreated }) {
         return roles[roleValue] || roles[0];
     };
 
-    // Check if the institution field can be shown (only for SENDER)
     const canSelectInstitution = parseInt(formData.role) === 0;
 
     return (
-        <Modal 
-            isOpen={isOpen} 
-            onClose={handleClose} 
-            title="Criar Novo Usuário" 
+        <Modal
+            isOpen={isOpen}
+            onClose={handleClose}
+            title="Criar Novo Usuário"
             className="max-w-3xl"
             maxHeight="max-h-[85vh]"
         >
             <form onSubmit={handleSubmit} className="space-y-4">
-                {/* Name */}
                 <div className="space-y-2">
                     <label className="flex items-center gap-2 text-sm font-medium text-gray-200">
                         <User className="w-4 h-4 text-cyan-400" />
@@ -147,7 +150,6 @@ export default function CreateUserModal({ isOpen, onClose, onUserCreated }) {
                     />
                 </div>
 
-                {/* Email */}
                 <div className="space-y-2">
                     <label className="flex items-center gap-2 text-sm font-medium text-gray-200">
                         <Mail className="w-4 h-4 text-cyan-400" />
@@ -164,7 +166,6 @@ export default function CreateUserModal({ isOpen, onClose, onUserCreated }) {
                     />
                 </div>
 
-                {/* Password */}
                 <div className="space-y-2">
                     <label className="flex items-center gap-2 text-sm font-medium text-gray-200">
                         <Lock className="w-4 h-4 text-cyan-400" />
@@ -195,9 +196,7 @@ export default function CreateUserModal({ isOpen, onClose, onUserCreated }) {
                     </div>
                 </div>
 
-                {/* Role and Institution - Responsive Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {/* Role */}
                     <div className="space-y-2">
                         <label className="flex items-center gap-2 text-sm font-medium text-gray-200">
                             <Shield className="w-4 h-4 text-cyan-400" />
@@ -216,7 +215,6 @@ export default function CreateUserModal({ isOpen, onClose, onUserCreated }) {
                         </select>
                     </div>
 
-                    {/* Institution */}
                     <div className="space-y-2">
                         <label className="flex items-center gap-2 text-sm font-medium text-gray-200">
                             <Building2 className="w-4 h-4 text-cyan-400" />
@@ -246,7 +244,6 @@ export default function CreateUserModal({ isOpen, onClose, onUserCreated }) {
                     </div>
                 </div>
 
-                {/* Alert about Institution restriction */}
                 {!canSelectInstitution && (
                     <div className="flex items-start gap-3 p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl">
                         <AlertCircle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
@@ -259,38 +256,6 @@ export default function CreateUserModal({ isOpen, onClose, onUserCreated }) {
                     </div>
                 )}
 
-                {/* Status Active */}
-                <div className="flex items-center justify-between p-3 bg-slate-800/30 rounded-xl border border-slate-600/30">
-                    <div>
-                        <label className="text-sm font-medium text-gray-200 cursor-pointer">
-                            Status do Usuário
-                        </label>
-                        <p className="text-xs text-gray-400 mt-1">
-                            {formData.active ? "Usuário pode fazer login" : "Usuário bloqueado"}
-                        </p>
-                    </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                        <input
-                            type="checkbox"
-                            name="active"
-                            checked={formData.active}
-                            onChange={handleChange}
-                            className="sr-only peer"
-                        />
-                        <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-cyan-800 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-600"></div>
-                    </label>
-                </div>
-
-                {/* Role Preview */}
-                <div className="p-3 bg-gradient-to-r from-slate-800/50 to-slate-700/50 rounded-xl border border-slate-600/30">
-                    <p className="text-xs text-gray-400 mb-2">Preview da Função:</p>
-                    <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-sm font-medium ${getRoleInfo(parseInt(formData.role)).color}`}>
-                        <Shield className="w-3.5 h-3.5" />
-                        {getRoleInfo(parseInt(formData.role)).name}
-                    </span>
-                </div>
-
-                {/* Buttons */}
                 <div className="flex flex-col sm:flex-row gap-3 pt-2">
                     <button
                         type="button"
@@ -318,10 +283,6 @@ export default function CreateUserModal({ isOpen, onClose, onUserCreated }) {
                         )}
                     </button>
                 </div>
-
-                <p className="text-xs text-center text-gray-400">
-                    Todas as alterações serão registradas no log do sistema
-                </p>
             </form>
         </Modal>
     );

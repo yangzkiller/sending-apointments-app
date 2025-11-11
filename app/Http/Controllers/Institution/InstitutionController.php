@@ -115,7 +115,6 @@ class InstitutionController extends Controller
     {
         $validated = request()->validate([
             'name' => 'required|string|max:255|unique:institutions,name',
-            'active' => 'required|boolean',
         ]);
 
         $institution = Institution::create($validated);

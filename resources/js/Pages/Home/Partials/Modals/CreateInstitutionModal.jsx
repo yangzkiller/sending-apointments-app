@@ -16,7 +16,7 @@ export default function CreateInstitutionModal({ isOpen, onClose, onInstitutionC
         const { name, value, type, checked } = e.target;
         setFormData((prev) => ({
             ...prev,
-            [name]: type === "checkbox" ? checked : value,
+            [name]: type === "checkbox" ? checked : value.toUpperCase(),
         }));
     };
 
@@ -31,20 +31,19 @@ export default function CreateInstitutionModal({ isOpen, onClose, onInstitutionC
             };
 
             await api.post(route("admin.institutions.store"), dataToSend);
-            
+
             toast.success("Instituição criada com sucesso!");
-            
-            // Reset form
+
             setFormData({
                 name: "",
                 active: true,
             });
-            
+
             onInstitutionCreated();
             onClose();
         } catch (error) {
             console.error("Erro ao criar instituição:", error);
-            
+
             if (error.response?.data?.errors) {
                 const errors = error.response.data.errors;
                 Object.values(errors).flat().forEach((msg) => toast.error(msg));
@@ -57,7 +56,6 @@ export default function CreateInstitutionModal({ isOpen, onClose, onInstitutionC
     };
 
     const handleClose = () => {
-        // Reset form when closing
         setFormData({
             name: "",
             active: true,
@@ -66,15 +64,14 @@ export default function CreateInstitutionModal({ isOpen, onClose, onInstitutionC
     };
 
     return (
-        <Modal 
-            isOpen={isOpen} 
-            onClose={handleClose} 
-            title="Criar Nova Instituição" 
+        <Modal
+            isOpen={isOpen}
+            onClose={handleClose}
+            title="Criar Nova Instituição"
             className="max-w-2xl"
             maxHeight="max-h-[85vh]"
         >
             <form onSubmit={handleSubmit} className="space-y-4">
-                {/* Name */}
                 <div className="space-y-2">
                     <label className="flex items-center gap-2 text-sm font-medium text-gray-200">
                         <Building2 className="w-4 h-4 text-cyan-400" />
@@ -91,29 +88,6 @@ export default function CreateInstitutionModal({ isOpen, onClose, onInstitutionC
                     />
                 </div>
 
-                {/* Status Active */}
-                <div className="flex items-center justify-between p-4 bg-slate-800/30 rounded-xl border border-slate-600/30">
-                    <div>
-                        <label className="text-sm font-medium text-gray-200 cursor-pointer">
-                            Status da Instituição
-                        </label>
-                        <p className="text-xs text-gray-400 mt-1">
-                            {formData.active ? "Instituição ativa e disponível" : "Instituição desativada"}
-                        </p>
-                    </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                        <input
-                            type="checkbox"
-                            name="active"
-                            checked={formData.active}
-                            onChange={handleChange}
-                            className="sr-only peer"
-                        />
-                        <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-cyan-800 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-600"></div>
-                    </label>
-                </div>
-
-                {/* Info Card */}
                 <div className="p-4 bg-gradient-to-r from-cyan-900/30 to-blue-900/30 rounded-xl border border-cyan-500/30">
                     <div className="flex items-start gap-3">
                         <div className="p-2 bg-cyan-500/20 rounded-lg">
@@ -122,14 +96,13 @@ export default function CreateInstitutionModal({ isOpen, onClose, onInstitutionC
                         <div className="flex-1">
                             <h4 className="text-sm font-semibold text-cyan-200 mb-1">Sobre Instituições</h4>
                             <p className="text-xs text-gray-400 leading-relaxed">
-                                As instituições são usadas para organizar e agrupar usuários no sistema. 
+                                As instituições são usadas para organizar e agrupar usuários no sistema.
                                 Cada usuário pode estar vinculado a uma instituição.
                             </p>
                         </div>
                     </div>
                 </div>
 
-                {/* Buttons */}
                 <div className="flex flex-col sm:flex-row gap-3 pt-2">
                     <button
                         type="button"
@@ -157,10 +130,6 @@ export default function CreateInstitutionModal({ isOpen, onClose, onInstitutionC
                         )}
                     </button>
                 </div>
-
-                <p className="text-xs text-center text-gray-400">
-                    A instituição será registrada no log do sistema
-                </p>
             </form>
         </Modal>
     );
