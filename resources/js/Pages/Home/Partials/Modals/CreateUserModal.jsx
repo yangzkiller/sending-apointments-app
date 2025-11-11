@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
-import { User, Mail, Lock, Shield, Building2, Eye, EyeOff, Loader2, UserPlus, AlertCircle } from "lucide-react";
+import { User, Mail, Lock, Shield, Building2, Loader2, UserPlus, AlertCircle } from "lucide-react";
 import { toast } from "react-toastify";
 import api from "@/axios";
 import { route } from "ziggy-js";
 import Modal from "@/Components/Generals/Modal";
+import FormField from "@/Components/Generals/FormField";
+import Button from "@/Components/Generals/Button";
 
 export default function CreateUserModal({ isOpen, onClose, onUserCreated }) {
     const [loading, setLoading] = useState(false);
     const [institutions, setInstitutions] = useState([]);
-    const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -134,67 +135,45 @@ export default function CreateUserModal({ isOpen, onClose, onUserCreated }) {
             maxHeight="max-h-[85vh]"
         >
             <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                    <label className="flex items-center gap-2 text-sm font-medium text-gray-200">
-                        <User className="w-4 h-4 text-cyan-400" />
-                        Nome Completo
-                    </label>
-                    <input
-                        type="text"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        required
-                        className="w-full px-4 py-2.5 bg-slate-800/50 border border-slate-600/50 rounded-xl text-white placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all text-sm"
-                        placeholder="Digite o nome completo"
-                    />
-                </div>
+                <FormField
+                    label="Nome Completo"
+                    icon={<User className="w-4 h-4" />}
+                    type="text"
+                    value={formData.name}
+                    onChange={(e) => handleChange({ ...e, target: { ...e.target, name: 'name' } })}
+                    labelClassName="text-gray-200 text-sm font-medium"
+                    iconClassName="text-cyan-400"
+                    inputClassName="bg-slate-800/50 border-slate-600/50 rounded-xl text-sm"
+                    placeholder="Digite o nome completo"
+                    required
+                />
 
-                <div className="space-y-2">
-                    <label className="flex items-center gap-2 text-sm font-medium text-gray-200">
-                        <Mail className="w-4 h-4 text-cyan-400" />
-                        Email
-                    </label>
-                    <input
-                        type="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        required
-                        className="w-full px-4 py-2.5 bg-slate-800/50 border border-slate-600/50 rounded-xl text-white placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all text-sm"
-                        placeholder="usuario@exemplo.com"
-                    />
-                </div>
+                <FormField
+                    label="Email"
+                    icon={<Mail className="w-4 h-4" />}
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => handleChange({ ...e, target: { ...e.target, name: 'email' } })}
+                    labelClassName="text-gray-200 text-sm font-medium"
+                    iconClassName="text-cyan-400"
+                    inputClassName="bg-slate-800/50 border-slate-600/50 rounded-xl text-sm"
+                    placeholder="usuario@exemplo.com"
+                    required
+                />
 
-                <div className="space-y-2">
-                    <label className="flex items-center gap-2 text-sm font-medium text-gray-200">
-                        <Lock className="w-4 h-4 text-cyan-400" />
-                        Senha
-                    </label>
-                    <div className="relative">
-                        <input
-                            type={showPassword ? "text" : "password"}
-                            name="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            required
-                            className="w-full px-4 py-2.5 pr-12 bg-slate-800/50 border border-slate-600/50 rounded-xl text-white placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all text-sm"
-                            placeholder="Mínimo 8 caracteres"
-                            minLength={8}
-                        />
-                        <button
-                            type="button"
-                            onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 hover:bg-slate-700/50 rounded-lg transition-colors"
-                        >
-                            {showPassword ? (
-                                <EyeOff className="w-4 h-4 text-gray-400" />
-                            ) : (
-                                <Eye className="w-4 h-4 text-gray-400" />
-                            )}
-                        </button>
-                    </div>
-                </div>
+                <FormField
+                    label="Senha"
+                    icon={<Lock className="w-4 h-4" />}
+                    type="password"
+                    value={formData.password}
+                    onChange={(e) => handleChange({ ...e, target: { ...e.target, name: 'password' } })}
+                    labelClassName="text-gray-200 text-sm font-medium"
+                    iconClassName="text-cyan-400"
+                    inputClassName="bg-slate-800/50 border-slate-600/50 rounded-xl text-sm"
+                    placeholder="Mínimo 8 caracteres"
+                    minLength={8}
+                    required
+                />
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
@@ -265,10 +244,11 @@ export default function CreateUserModal({ isOpen, onClose, onUserCreated }) {
                     >
                         Cancelar
                     </button>
-                    <button
+                    <Button
                         type="submit"
                         disabled={loading}
-                        className="flex-1 px-6 py-2.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-xl transition-all font-medium shadow-lg shadow-cyan-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
+                        className="flex-1 w-full px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 shadow-lg shadow-cyan-500/20 text-sm"
+                        variant="primary"
                     >
                         {loading ? (
                             <>
@@ -281,7 +261,7 @@ export default function CreateUserModal({ isOpen, onClose, onUserCreated }) {
                                 Criar Usuário
                             </>
                         )}
-                    </button>
+                    </Button>
                 </div>
             </form>
         </Modal>

@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
-import { User, Mail, Lock, Shield, Building2, Eye, EyeOff, Loader2, Save, AlertCircle } from "lucide-react";
+import { User, Mail, Lock, Shield, Building2, Loader2, Save, AlertCircle } from "lucide-react";
 import { toast } from "react-toastify";
 import api from "@/axios";
 import { route } from "ziggy-js";
 import Modal from "@/Components/Generals/Modal";
+import FormField from "@/Components/Generals/FormField";
+import Button from "@/Components/Generals/Button";
 
 export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) {
     const [loading, setLoading] = useState(false);
     const [institutions, setInstitutions] = useState([]);
-    const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -120,71 +121,50 @@ export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) 
             className="max-w-3xl"
             maxHeight="max-h-[75vh]"
         >
-            <form onSubmit={handleSubmit} className="space-y-1">
+            <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Name */}
-                <div className="space-y-1">
-                    <label className="flex items-center gap-2 text-sm font-medium text-gray-200">
-                        <User className="w-4 h-4 text-cyan-400" />
-                        Nome Completo
-                    </label>
-                    <input
-                        type="text"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        required
-                        className="w-full px-4 py-2.5 bg-slate-800/50 border border-slate-600/50 rounded-xl text-white placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all text-sm hover:border-blue-400/50"
-                        placeholder="Digite o nome completo"
-                    />
-                </div>
+                <FormField
+                    label="Nome Completo"
+                    icon={<User className="w-4 h-4" />}
+                    type="text"
+                    value={formData.name}
+                    onChange={(e) => handleChange({ ...e, target: { ...e.target, name: 'name' } })}
+                    labelClassName="text-gray-200 text-sm font-medium"
+                    iconClassName="text-cyan-400"
+                    inputClassName="bg-slate-800/50 border-slate-600/50 rounded-xl text-sm"
+                    placeholder="Digite o nome completo"
+                    required
+                />
 
                 {/* Email */}
-                <div className="space-y-1">
-                    <label className="flex items-center gap-2 text-sm font-medium text-gray-200">
-                        <Mail className="w-4 h-4 text-cyan-400" />
-                        Email
-                    </label>
-                    <input
-                        type="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        required
-                        className="w-full px-4 py-2.5 bg-slate-800/50 border border-slate-600/50 rounded-xl text-white placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all text-sm hover:border-blue-400/50"
-                        placeholder="usuario@exemplo.com"
-                    />
-                </div>
+                <FormField
+                    label="Email"
+                    icon={<Mail className="w-4 h-4" />}
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => handleChange({ ...e, target: { ...e.target, name: 'email' } })}
+                    labelClassName="text-gray-200 text-sm font-medium"
+                    iconClassName="text-cyan-400"
+                    inputClassName="bg-slate-800/50 border-slate-600/50 rounded-xl text-sm"
+                    placeholder="usuario@exemplo.com"
+                    required
+                />
 
                 {/* New Password (Optional) */}
-                <div className="space-y-2">
-                    <label className="flex items-center gap-2 text-sm font-medium text-gray-200">
-                        <Lock className="w-4 h-4 text-cyan-400" />
-                        Nova Senha
-                        <span className="text-xs text-gray-400 font-normal">(deixe em branco para não alterar)</span>
-                    </label>
-                    <div className="relative">
-                        <input
-                            type={showPassword ? "text" : "password"}
-                            name="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            className="w-full px-4 py-2.5 pr-12 bg-slate-800/50 border border-slate-600/50 rounded-xl text-white placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all text-sm hover:border-blue-400/50"
-                            placeholder="Mínimo 8 caracteres"
-                            minLength={8}
-                        />
-                        <button
-                            type="button"
-                            onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 hover:bg-slate-700/50 rounded-lg transition-colors "
-                        >
-                            {showPassword ? (
-                                <EyeOff className="w-4 h-4 text-gray-400" />
-                            ) : (
-                                <Eye className="w-4 h-4 text-gray-400" />
-                            )}
-                        </button>
-                    </div>
-                </div>
+                <FormField
+                    label="Nova Senha"
+                    icon={<Lock className="w-4 h-4" />}
+                    type="password"
+                    value={formData.password}
+                    onChange={(e) => handleChange({ ...e, target: { ...e.target, name: 'password' } })}
+                    labelClassName="text-gray-200 text-sm font-medium"
+                    iconClassName="text-cyan-400"
+                    inputClassName="bg-slate-800/50 border-slate-600/50 rounded-xl text-sm"
+                    placeholder="Deixe em branco para não alterar"
+                    minLength={8}
+                />
+                <p className="text-xs text-gray-400 mt-1">(mín. 8 caracteres)</p>
+
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {/* Role */}
@@ -198,7 +178,7 @@ export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) 
                             value={formData.role}
                             onChange={handleChange}
                             required
-                            className="w-full px-4 py-2.5 bg-slate-800/50 border border-slate-600/50 rounded-xl text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all text-sm appearance-none cursor-pointer hover:border-blue-400/50"
+                            className="px-3 py-2 bg-slate-700 border border-slate-600 rounded-xl text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm appearance-none cursor-pointer hover:border-blue-400/50"
                         >
                             <option value={0}>Remetente</option>
                             <option value={1}>Destinatário</option>
@@ -212,7 +192,7 @@ export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) 
                             <Building2 className="w-4 h-4 text-cyan-400" />
                             Instituição
                             {parseInt(formData.role) !== 0 && (
-                                <span className="text-xs text-amber-400">(Apenas para Remetentes)</span>
+                                <span className="text-xs text-cyan-400">(Apenas para Remetentes)</span>
                             )}
                         </label>
                         <select
@@ -220,10 +200,11 @@ export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) 
                             value={formData.id_institution}
                             onChange={handleChange}
                             disabled={parseInt(formData.role) !== 0}
-                            className={`w-full px-4 py-2.5 bg-slate-800/50 border border-slate-600/50 rounded-xl text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all text-sm appearance-none ${
+                            className={`px-3 py-3 bg-slate-700 border border-slate-600 rounded-xl text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm appearance-none ${
                                 parseInt(formData.role) === 0 ? 'cursor-pointer hover:border-blue-400/50' : 'cursor-not-allowed opacity-50'
                             }`}
-                        >
+                    >   
+
                             <option value="">Nenhuma</option>
                             {institutions
                                 .filter((inst) => inst.active)
@@ -258,15 +239,6 @@ export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) 
                     </label>
                 </div>
 
-                {/* Role Preview */}
-                <div className="p-3 bg-gradient-to-r from-slate-800/50 to-slate-700/50 rounded-xl border border-slate-600/30">
-                    <p className="text-xs text-gray-400 mb-2">Preview da Função:</p>
-                    <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-sm font-medium ${getRoleInfo(parseInt(formData.role)).color}`}>
-                        <Shield className="w-3.5 h-3.5" />
-                        {getRoleInfo(parseInt(formData.role)).name}
-                    </span>
-                </div>
-
                 {/* Buttons */}
                 <div className="flex flex-col sm:flex-row gap-3 pt-2">
                     <button
@@ -277,10 +249,11 @@ export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) 
                     >
                         Cancelar
                     </button>
-                    <button
+                    <Button
                         type="submit"
                         disabled={loading}
-                        className="flex-1 px-6 py-2.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-xl transition-all font-medium shadow-lg shadow-cyan-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm cursor-pointer"
+                        className="flex-1 w-full px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 shadow-lg shadow-cyan-500/20 text-sm"
+                        variant="primary"
                     >
                         {loading ? (
                             <>
@@ -293,12 +266,8 @@ export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) 
                                 Salvar Alterações
                             </>
                         )}
-                    </button>
+                    </Button>
                 </div>
-
-                <p className="text-xs text-center text-gray-400">
-                    Todas as alterações serão registradas no log do sistema
-                </p>
             </form>
         </Modal>
     );
