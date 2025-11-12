@@ -14,6 +14,7 @@ export default function Home() {
     const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] = useState(false);
 
     useEffect(() => {
+        document.title = "Home";
         const justLoggedIn = sessionStorage.getItem('justLoggedIn');
 
         if (justLoggedIn && auth?.user?.name) {

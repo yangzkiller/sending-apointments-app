@@ -1,6 +1,6 @@
 import { route } from 'ziggy-js';
 import { router } from '@inertiajs/react';
-import { useState } from "react";
+import { useState, useEffect, use } from "react";
 import api from '@/axios';
 import GuestLayout from "@/Components/Layouts/GuestLayout";
 import AuthenticationCard from "@/Pages/Authentication/Partials/AuthenticationCard";
@@ -10,6 +10,10 @@ export default function Authentication() {
     const [password, setPassword] = useState("");
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        document.title = "Login";
+    });
 
     const handleSubmit = async (e) => {
         e.preventDefault();
