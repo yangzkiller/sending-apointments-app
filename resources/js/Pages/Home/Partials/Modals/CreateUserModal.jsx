@@ -132,7 +132,7 @@ export default function CreateUserModal({ isOpen, onClose, onUserCreated }) {
             onClose={handleClose}
             title="Criar Novo Usuário"
             className="max-w-3xl"
-            maxHeight="max-h-[85vh]"
+            maxHeight="max-h-[80vh]"
         >
             <form onSubmit={handleSubmit} className="space-y-4">
                 <FormField
@@ -247,8 +247,7 @@ export default function CreateUserModal({ isOpen, onClose, onUserCreated }) {
                     <Button
                         type="submit"
                         disabled={loading}
-                        className="flex-1 w-full px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 shadow-lg shadow-cyan-500/20 text-sm"
-                        variant="primary"
+                        className="flex-1 w-full px-6 py-2.5 rounded-xl bg-[#1383be] hover:bg-[#0e6da0] text-white text-sm"
                     >
                         {loading ? (
                             <>
@@ -257,7 +256,6 @@ export default function CreateUserModal({ isOpen, onClose, onUserCreated }) {
                             </>
                         ) : (
                             <>
-                                <UserPlus className="w-5 h-5" />
                                 Criar Usuário
                             </>
                         )}

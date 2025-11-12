@@ -68,7 +68,7 @@ export default function EditInstitutionModal({ isOpen, onClose, institution, onI
             onClose={onClose}
             title="Editar Instituição"
             className="max-w-2xl"
-            maxHeight="max-h-[85vh]"
+            maxHeight="max-h-[80vh]"
         >
             <form onSubmit={handleSubmit} className="space-y-4">
                 <FormField
@@ -130,15 +130,14 @@ export default function EditInstitutionModal({ isOpen, onClose, institution, onI
                         type="button"
                         onClick={onClose}
                         disabled={loading}
-                        className="flex-1 px-6 py-2.5 bg-slate-700 hover:bg-slate-600 text-white rounded-xl transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed text-sm cursor-pointer"
+                        className="flex-1 px-6 py-2.5 bg-slate-700 hover:bg-slate-600 text-white rounded-xl transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                     >
                         Cancelar
                     </button>
                     <Button
                         type="submit"
                         disabled={loading}
-                        className="flex-1 w-full px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 shadow-lg shadow-cyan-500/20 text-sm"
-                        variant="primary"
+                        className="flex-1 flex items-center justify-center"
                     >
                         {loading ? (
                             <>
@@ -147,7 +146,7 @@ export default function EditInstitutionModal({ isOpen, onClose, institution, onI
                             </>
                         ) : (
                             <>
-                                <Save className="w-5 h-5" />
+                                <Save className="w-5 h-5 mr-2"/>
                                 Salvar Alterações
                             </>
                         )}

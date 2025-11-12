@@ -118,8 +118,8 @@ export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) 
             isOpen={isOpen}
             onClose={onClose}
             title="Editar Usuário"
-            className="max-w-3xl"
-            maxHeight="max-h-[75vh]"
+            className="max-w-3xl pt-20 md:pt-0"
+            maxHeight="max-h-[calc(100vh-80px)]"
         >
             <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Name */}
@@ -168,7 +168,7 @@ export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) 
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {/* Role */}
-                    <div className="space-y-2">
+                    <div className="space-y-1">
                         <label className="flex items-center gap-2 text-sm font-medium text-gray-200">
                             <Shield className="w-4 h-4 text-cyan-400" />
                             Função
@@ -178,7 +178,7 @@ export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) 
                             value={formData.role}
                             onChange={handleChange}
                             required
-                            className="px-3 py-2 bg-slate-700 border border-slate-600 rounded-xl text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm appearance-none cursor-pointer hover:border-blue-400/50"
+                            className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-xl text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm appearance-none cursor-pointer hover:border-blue-400/50"
                         >
                             <option value={0}>Remetente</option>
                             <option value={1}>Destinatário</option>
@@ -187,7 +187,7 @@ export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) 
                     </div>
 
                     {/* Institution */}
-                    <div className="space-y-2">
+                    <div className="space-y-1">
                         <label className="flex items-center gap-2 text-sm font-medium text-gray-200">
                             <Building2 className="w-4 h-4 text-cyan-400" />
                             Instituição
@@ -200,7 +200,7 @@ export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) 
                             value={formData.id_institution}
                             onChange={handleChange}
                             disabled={parseInt(formData.role) !== 0}
-                            className={`px-3 py-3 bg-slate-700 border border-slate-600 rounded-xl text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm appearance-none ${
+                            className={`w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-xl text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm appearance-none ${
                                 parseInt(formData.role) === 0 ? 'cursor-pointer hover:border-blue-400/50' : 'cursor-not-allowed opacity-50'
                             }`}
                     >   
@@ -245,15 +245,14 @@ export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) 
                         type="button"
                         onClick={onClose}
                         disabled={loading}
-                        className="flex-1 px-6 py-2.5 bg-slate-700 hover:bg-slate-600 text-white rounded-xl transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed text-sm cursor-pointer"
+                        className="flex-1 px-6 py-2.5 bg-slate-700 hover:bg-slate-600 text-white rounded-xl transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                     >
                         Cancelar
                     </button>
                     <Button
                         type="submit"
                         disabled={loading}
-                        className="flex-1 w-full px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 shadow-lg shadow-cyan-500/20 text-sm"
-                        variant="primary"
+                        className="flex-1 flex items-center justify-center"
                     >
                         {loading ? (
                             <>
@@ -262,7 +261,7 @@ export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) 
                             </>
                         ) : (
                             <>
-                                <Save className="w-5 h-5" />
+                                <Save className="w-5 h-5 mr-2"/>
                                 Salvar Alterações
                             </>
                         )}

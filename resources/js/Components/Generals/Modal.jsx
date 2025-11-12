@@ -9,7 +9,7 @@ export default function Modal({
   children,
   showClose = true,
   className = "",
-  maxHeight = "max-h-[80vh]",
+  maxHeight = "max-h-[85vh]",
 }) {
     useEffect(() => {
         if (isOpen) {
