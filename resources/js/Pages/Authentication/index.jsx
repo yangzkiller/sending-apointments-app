@@ -1,6 +1,6 @@
 import { route } from 'ziggy-js';
 import { router } from '@inertiajs/react';
-import { useState, useEffect, use } from "react";
+import { useState, useEffect } from "react";
 import api from '@/axios';
 import GuestLayout from "@/Components/Layouts/GuestLayout";
 import AuthenticationCard from "@/Pages/Authentication/Partials/AuthenticationCard";
