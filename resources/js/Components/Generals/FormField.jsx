@@ -8,9 +8,13 @@ export default function FormField({
     value,
     onChange,
     error,
+    placeholder = '',
     inputClassName = '',
     labelClassName = '',
     iconClassName = '',
+    disabled = false,
+    required = false,
+    minLength,
 }) {
     const [showPassword, setShowPassword] = useState(false);
     const isPassword = type === 'password';
@@ -32,15 +36,19 @@ export default function FormField({
                     type={isPassword && showPassword ? 'text' : type}
                     value={value}
                     onChange={onChange}
+                    placeholder={placeholder}
+                    disabled={disabled}
+                    required={required}
+                    minLength={minLength}
                     className={`w-full ${
                         icon ? 'pl-10' : 'pl-3'
-                    } ${isPassword ? 'pr-10' : 'pr-3'} border border-[#1382be9b] bg-gray-800 rounded px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-[#1696da] ${inputClassName}`}
+                    } ${isPassword ? 'pr-10' : 'pr-3'} border border-[#1382be9b] bg-gray-800 rounded px-3 py-2 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1696da] disabled:opacity-50 disabled:cursor-not-allowed transition-all ${inputClassName}`}
                 />
 
                 {isPassword && (
                     <span
-                        className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 cursor-pointer"
-                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 cursor-pointer hover:bg-slate-700/50 rounded-lg"
+                        onClick={() => !disabled && setShowPassword(!showPassword)}
                     >
                         {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </span>
