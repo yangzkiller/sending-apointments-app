@@ -85,7 +85,7 @@ export default function CreateInstitutionModal({ isOpen, onClose, onInstitutionC
                     }))}
                     labelClassName="text-gray-200 text-sm font-medium"
                     iconClassName="text-cyan-400"
-                    inputClassName="bg-slate-800/50 border-slate-600/50 rounded-xl text-sm"
+                    inputClassName="bg-slate-800/50 border-slate-600/50 rounded-xl text-sm hover:border-blue-400/50"
                     placeholder="Digite o nome da instituição"
                     required
                 />

@@ -1,11 +1,13 @@
-import { useState, useEffect } from "react";
-import { User, Mail, Lock, Shield, Building2, Loader2, Save, AlertCircle } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { User, Mail, Lock, Shield, Building2, Loader2, Save, ChevronDown } from "lucide-react";
 import { toast } from "react-toastify";
 import api from "@/axios";
 import { route } from "ziggy-js";
 import Modal from "@/Components/Generals/Modal";
 import FormField from "@/Components/Generals/FormField";
 import Button from "@/Components/Generals/Button";
+import Dropdown from "@/Components/Generals/Dropdown";
+
 
 export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) {
     const [loading, setLoading] = useState(false);
@@ -102,13 +104,85 @@ export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) 
         }
     };
 
-    const getRoleInfo = (roleValue) => {
-        const roles = {
-            0: { name: "Remetente", color: "bg-blue-500/20 text-blue-300 border-blue-500/30" },
-            1: { name: "Destinatário", color: "bg-blue-600/20 text-blue-200 border-blue-600/30" },
-            2: { name: "Administrador", color: "bg-cyan-500/20 text-cyan-300 border-cyan-500/30" },
-        };
-        return roles[roleValue] || roles[0];
+    const InstitutionDropdownField = ({ formData, handleChange, institutions }) => {
+        const [open, setOpen] = useState(false);
+        const dropdownRef = useRef(null);
+
+        const isSender = parseInt(formData.role) === 0;
+
+        useEffect(() => {
+            const handleClickOutside = (e) => {
+                if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+                    setOpen(false);
+                }
+            };
+            document.addEventListener("mousedown", handleClickOutside);
+            return () => document.removeEventListener("mousedown", handleClickOutside);
+        }, []);
+
+        const selectedInstitution = institutions.find(
+            (inst) => inst.id === formData.id_institution
+        );
+
+        return (
+            <div className="space-y-1 relative" ref={dropdownRef}>
+                <label className="flex items-center gap-2 text-sm font-medium text-gray-200">
+                    <Building2 className="w-4 h-4 text-cyan-400" />
+                    Instituição
+                    {!isSender && (
+                        <span className="text-xs text-cyan-400">(Apenas para Remetentes)</span>
+                    )}
+                </label>
+
+                <button
+                    type="button"
+                    disabled={!isSender}
+                    onClick={() => isSender && setOpen((prev) => !prev)}
+                    className={`w-full flex justify-between items-center px-3 py-2 bg-slate-700 border border-slate-600 rounded-xl text-white text-sm transition-all ${
+                        isSender
+                            ? "cursor-pointer hover:border-blue-400/50 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            : "cursor-not-allowed opacity-50"
+                    }`}
+                >
+                    <span>
+                        {selectedInstitution?.name || "Nenhuma"}
+                    </span>
+                    {isSender && <ChevronDown className="w-4 h-4 text-gray-400" />}
+                </button>
+
+                <Dropdown
+                    open={open}
+                    className="w-full bg-slate-700 border border-slate-600 rounded-xl max-h-[140px] overflow-y-auto shadow-lg bottom-full mb-2 top-auto"
+                >
+                    <div className="flex flex-col">
+                        <button
+                            className="text-left px-3 py-2 hover:bg-blue-500 text-sm text-white transition-colors"
+                            onClick={() => {
+                                handleChange({ target: { name: 'id_institution', value: '' } });
+                                setOpen(false);
+                            }}
+                        >
+                            Nenhuma
+                        </button>
+                        {institutions
+                            .filter((inst) => inst.active)
+                            .map((inst) => (
+                                <button
+                                    key={inst.id}
+                                    className="text-left px-3 py-2 text-sm text-white transition-colors hover:bg-blue-500"
+                                    onClick={() => {
+                                        handleChange({ target: { name: 'id_institution', value: inst.id } });
+                                        setOpen(false);
+                                    }}
+                                >
+                                    {inst.name}
+                                </button>
+                            ))}
+                    </div>
+                </Dropdown>
+
+            </div>
+        );
     };
 
     if (!user) return null;
@@ -131,7 +205,7 @@ export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) 
                     onChange={(e) => handleChange({ ...e, target: { ...e.target, name: 'name' } })}
                     labelClassName="text-gray-200 text-sm font-medium"
                     iconClassName="text-cyan-400"
-                    inputClassName="bg-slate-800/50 border-slate-600/50 rounded-xl text-sm"
+                    inputClassName="bg-slate-800/50 border-slate-600/50 rounded-xl text-sm hover:border-blue-400/50"
                     placeholder="Digite o nome completo"
                     required
                 />
@@ -145,7 +219,7 @@ export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) 
                     onChange={(e) => handleChange({ ...e, target: { ...e.target, name: 'email' } })}
                     labelClassName="text-gray-200 text-sm font-medium"
                     iconClassName="text-cyan-400"
-                    inputClassName="bg-slate-800/50 border-slate-600/50 rounded-xl text-sm"
+                    inputClassName="bg-slate-800/50 border-slate-600/50 rounded-xl text-sm hover:border-blue-400/50"
                     placeholder="usuario@exemplo.com"
                     required
                 />
@@ -159,7 +233,7 @@ export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) 
                     onChange={(e) => handleChange({ ...e, target: { ...e.target, name: 'password' } })}
                     labelClassName="text-gray-200 text-sm font-medium"
                     iconClassName="text-cyan-400"
-                    inputClassName="bg-slate-800/50 border-slate-600/50 rounded-xl text-sm"
+                    inputClassName="bg-slate-800/50 border-slate-600/50 rounded-xl text-sm hover:border-blue-400/50"
                     placeholder="Deixe em branco para não alterar"
                     minLength={8}
                 />
@@ -178,7 +252,7 @@ export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) 
                             value={formData.role}
                             onChange={handleChange}
                             required
-                            className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-xl text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm appearance-none cursor-pointer hover:border-blue-400/50"
+                            className="w-full bg-slate-700 border border-slate-600 rounded-xl max-h-[140px] overflow-y-auto shadow-lg"
                         >
                             <option value={0}>Remetente</option>
                             <option value={1}>Destinatário</option>
@@ -187,34 +261,11 @@ export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) 
                     </div>
 
                     {/* Institution */}
-                    <div className="space-y-1">
-                        <label className="flex items-center gap-2 text-sm font-medium text-gray-200">
-                            <Building2 className="w-4 h-4 text-cyan-400" />
-                            Instituição
-                            {parseInt(formData.role) !== 0 && (
-                                <span className="text-xs text-cyan-400">(Apenas para Remetentes)</span>
-                            )}
-                        </label>
-                        <select
-                            name="id_institution"
-                            value={formData.id_institution}
-                            onChange={handleChange}
-                            disabled={parseInt(formData.role) !== 0}
-                            className={`w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-xl text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm appearance-none ${
-                                parseInt(formData.role) === 0 ? 'cursor-pointer hover:border-blue-400/50' : 'cursor-not-allowed opacity-50'
-                            }`}
-                    >   
-
-                            <option value="">Nenhuma</option>
-                            {institutions
-                                .filter((inst) => inst.active)
-                                .map((inst) => (
-                                    <option key={inst.id} value={inst.id}>
-                                        {inst.name}
-                                    </option>
-                                ))}
-                        </select>
-                    </div>
+                    <InstitutionDropdownField 
+                        formData={formData} 
+                        handleChange={handleChange} 
+                        institutions={institutions} 
+                    />
                 </div>
 
                 {/* Status Active */}
