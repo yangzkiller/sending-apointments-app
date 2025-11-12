@@ -1,14 +1,16 @@
-import { useState, useEffect } from "react";
-import { User, Mail, Lock, Shield, Building2, Eye, EyeOff, Loader2, UserPlus, AlertCircle } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { User, Mail, Lock, Shield, Building2, Loader2, ChevronDown } from "lucide-react";
 import { toast } from "react-toastify";
 import api from "@/axios";
 import { route } from "ziggy-js";
 import Modal from "@/Components/Generals/Modal";
+import FormField from "@/Components/Generals/FormField";
+import Button from "@/Components/Generals/Button";
+import Dropdown from "@/Components/Generals/Dropdown";
 
 export default function CreateUserModal({ isOpen, onClose, onUserCreated }) {
     const [loading, setLoading] = useState(false);
     const [institutions, setInstitutions] = useState([]);
-    const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -114,13 +116,85 @@ export default function CreateUserModal({ isOpen, onClose, onUserCreated }) {
         onClose();
     };
 
-    const getRoleInfo = (roleValue) => {
-        const roles = {
-            0: { name: "Remetente", color: "bg-blue-500/20 text-blue-300 border-blue-500/30" },
-            1: { name: "Destinatário", color: "bg-blue-600/20 text-blue-200 border-blue-600/30" },
-            2: { name: "Administrador", color: "bg-cyan-500/20 text-cyan-300 border-cyan-500/30" },
-        };
-        return roles[roleValue] || roles[0];
+    const InstitutionDropdownField = ({ formData, handleChange, institutions }) => {
+        const [open, setOpen] = useState(false);
+        const dropdownRef = useRef(null);
+
+        const isSender = parseInt(formData.role) === 0;
+
+        useEffect(() => {
+            const handleClickOutside = (e) => {
+                if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+                    setOpen(false);
+                }
+            };
+            document.addEventListener("mousedown", handleClickOutside);
+            return () => document.removeEventListener("mousedown", handleClickOutside);
+        }, []);
+
+        const selectedInstitution = institutions.find(
+            (inst) => inst.id === formData.id_institution
+        );
+
+        return (
+            <div className="space-y-1 relative" ref={dropdownRef}>
+                <label className="flex items-center gap-2 text-sm font-medium text-gray-200">
+                    <Building2 className="w-4 h-4 text-cyan-400" />
+                    Instituição
+                    {!isSender && (
+                        <span className="text-xs text-cyan-400">(Apenas para Remetentes)</span>
+                    )}
+                </label>
+
+                <button
+                    type="button"
+                    disabled={!isSender}
+                    onClick={() => isSender && setOpen((prev) => !prev)}
+                    className={`w-full flex justify-between items-center px-3 py-2 bg-slate-700 border border-slate-600 rounded-xl text-white text-sm transition-all ${
+                        isSender
+                            ? "cursor-pointer hover:border-blue-400/50 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            : "cursor-not-allowed opacity-50"
+                    }`}
+                >
+                    <span>
+                        {selectedInstitution?.name || "Nenhuma"}
+                    </span>
+                    {isSender && <ChevronDown className="w-4 h-4 text-gray-400" />}
+                </button>
+
+                <Dropdown
+                    open={open}
+                    className="w-full bg-slate-700 border border-slate-600 rounded-xl max-h-[140px] overflow-y-auto shadow-lg bottom-full mb-2 top-auto"
+                >
+                    <div className="flex flex-col">
+                        <button
+                            className="text-left px-3 py-2 hover:bg-blue-500 text-sm text-white transition-colors"
+                            onClick={() => {
+                                handleChange({ target: { name: 'id_institution', value: '' } });
+                                setOpen(false);
+                            }}
+                        >
+                            Nenhuma
+                        </button>
+                        {institutions
+                            .filter((inst) => inst.active)
+                            .map((inst) => (
+                                <button
+                                    key={inst.id}
+                                    className="text-left px-3 py-2 text-sm text-white transition-colors hover:bg-blue-500"
+                                    onClick={() => {
+                                        handleChange({ target: { name: 'id_institution', value: inst.id } });
+                                        setOpen(false);
+                                    }}
+                                >
+                                    {inst.name}
+                                </button>
+                            ))}
+                    </div>
+                </Dropdown>
+
+            </div>
+        );
     };
 
     const canSelectInstitution = parseInt(formData.role) === 0;
@@ -130,74 +204,52 @@ export default function CreateUserModal({ isOpen, onClose, onUserCreated }) {
             isOpen={isOpen}
             onClose={handleClose}
             title="Criar Novo Usuário"
-            className="max-w-3xl"
-            maxHeight="max-h-[85vh]"
+            className="max-w-3xl pt-20"
+            maxHeight="h-[calc(80vh)]"
         >
             <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                    <label className="flex items-center gap-2 text-sm font-medium text-gray-200">
-                        <User className="w-4 h-4 text-cyan-400" />
-                        Nome Completo
-                    </label>
-                    <input
-                        type="text"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        required
-                        className="w-full px-4 py-2.5 bg-slate-800/50 border border-slate-600/50 rounded-xl text-white placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all text-sm"
-                        placeholder="Digite o nome completo"
-                    />
-                </div>
+                <FormField
+                    label="Nome Completo"
+                    icon={<User className="w-4 h-4" />}
+                    type="text"
+                    value={formData.name}
+                    onChange={(e) => handleChange({ ...e, target: { ...e.target, name: 'name' } })}
+                    labelClassName="text-gray-200 text-sm font-medium"
+                    iconClassName="text-cyan-400"
+                    inputClassName="bg-slate-800/50 border-slate-600/50 rounded-xl text-sm hover:border-blue-400/50"
+                    placeholder="Digite o nome completo"
+                    required
+                />
 
-                <div className="space-y-2">
-                    <label className="flex items-center gap-2 text-sm font-medium text-gray-200">
-                        <Mail className="w-4 h-4 text-cyan-400" />
-                        Email
-                    </label>
-                    <input
-                        type="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        required
-                        className="w-full px-4 py-2.5 bg-slate-800/50 border border-slate-600/50 rounded-xl text-white placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all text-sm"
-                        placeholder="usuario@exemplo.com"
-                    />
-                </div>
+                <FormField
+                    label="Email"
+                    icon={<Mail className="w-4 h-4" />}
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => handleChange({ ...e, target: { ...e.target, name: 'email' } })}
+                    labelClassName="text-gray-200 text-sm font-medium"
+                    iconClassName="text-cyan-400"
+                    inputClassName="bg-slate-800/50 border-slate-600/50 rounded-xl text-sm hover:border-blue-400/50"
+                    placeholder="usuario@exemplo.com"
+                    required
+                />
 
-                <div className="space-y-2">
-                    <label className="flex items-center gap-2 text-sm font-medium text-gray-200">
-                        <Lock className="w-4 h-4 text-cyan-400" />
-                        Senha
-                    </label>
-                    <div className="relative">
-                        <input
-                            type={showPassword ? "text" : "password"}
-                            name="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            required
-                            className="w-full px-4 py-2.5 pr-12 bg-slate-800/50 border border-slate-600/50 rounded-xl text-white placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all text-sm"
-                            placeholder="Mínimo 8 caracteres"
-                            minLength={8}
-                        />
-                        <button
-                            type="button"
-                            onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 hover:bg-slate-700/50 rounded-lg transition-colors"
-                        >
-                            {showPassword ? (
-                                <EyeOff className="w-4 h-4 text-gray-400" />
-                            ) : (
-                                <Eye className="w-4 h-4 text-gray-400" />
-                            )}
-                        </button>
-                    </div>
-                </div>
+                <FormField
+                    label="Senha"
+                    icon={<Lock className="w-4 h-4" />}
+                    type="password"
+                    value={formData.password}
+                    onChange={(e) => handleChange({ ...e, target: { ...e.target, name: 'password' } })}
+                    labelClassName="text-gray-200 text-sm font-medium"
+                    iconClassName="text-cyan-400"
+                    inputClassName="bg-slate-800/50 border-slate-600/50 rounded-xl text-sm hover:border-blue-400/50"
+                    placeholder="Mínimo 8 caracteres"
+                    minLength={8}
+                    required
+                />
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-2">
+                    <div className="space-y-1">
                         <label className="flex items-center gap-2 text-sm font-medium text-gray-200">
                             <Shield className="w-4 h-4 text-cyan-400" />
                             Função
@@ -207,7 +259,7 @@ export default function CreateUserModal({ isOpen, onClose, onUserCreated }) {
                             value={formData.role}
                             onChange={handleChange}
                             required
-                            className="w-full px-4 py-2.5 bg-slate-800/50 border border-slate-600/50 rounded-xl text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all text-sm appearance-none cursor-pointer"
+                            className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-xl text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm appearance-none cursor-pointer hover:border-blue-400/50"
                         >
                             <option value={0}>Remetente</option>
                             <option value={1}>Destinatário</option>
@@ -215,47 +267,13 @@ export default function CreateUserModal({ isOpen, onClose, onUserCreated }) {
                         </select>
                     </div>
 
-                    <div className="space-y-2">
-                        <label className="flex items-center gap-2 text-sm font-medium text-gray-200">
-                            <Building2 className="w-4 h-4 text-cyan-400" />
-                            Instituição
-                            {!canSelectInstitution && (
-                                <span className="text-xs text-amber-400">(Apenas para Remetentes)</span>
-                            )}
-                        </label>
-                        <select
-                            name="id_institution"
-                            value={formData.id_institution}
-                            onChange={handleChange}
-                            disabled={!canSelectInstitution}
-                            className={`w-full px-4 py-2.5 bg-slate-800/50 border border-slate-600/50 rounded-xl text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all text-sm appearance-none ${
-                                canSelectInstitution ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'
-                            }`}
-                        >
-                            <option value="">Nenhuma</option>
-                            {institutions
-                                .filter((inst) => inst.active)
-                                .map((inst) => (
-                                    <option key={inst.id} value={inst.id}>
-                                        {inst.name}
-                                    </option>
-                                ))}
-                        </select>
-                    </div>
+                    {/* Institution */}
+                    <InstitutionDropdownField 
+                        formData={formData} 
+                        handleChange={handleChange} 
+                        institutions={institutions} 
+                    />
                 </div>
-
-                {!canSelectInstitution && (
-                    <div className="flex items-start gap-3 p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl">
-                        <AlertCircle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
-                        <div className="flex-1">
-                            <p className="text-sm text-amber-200 font-medium">Restrição de Instituição</p>
-                            <p className="text-xs text-amber-300/80 mt-1">
-                                Apenas usuários com função "Remetente" podem ser vinculados a uma instituição.
-                            </p>
-                        </div>
-                    </div>
-                )}
-
                 <div className="flex flex-col sm:flex-row gap-3 pt-2">
                     <button
                         type="button"
@@ -265,10 +283,10 @@ export default function CreateUserModal({ isOpen, onClose, onUserCreated }) {
                     >
                         Cancelar
                     </button>
-                    <button
+                    <Button
                         type="submit"
                         disabled={loading}
-                        className="flex-1 px-6 py-2.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-xl transition-all font-medium shadow-lg shadow-cyan-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
+                        className="flex-1 w-full px-6 py-2.5 rounded-xl bg-[#1383be] hover:bg-[#0e6da0] text-white text-sm"
                     >
                         {loading ? (
                             <>
@@ -277,11 +295,10 @@ export default function CreateUserModal({ isOpen, onClose, onUserCreated }) {
                             </>
                         ) : (
                             <>
-                                <UserPlus className="w-5 h-5" />
                                 Criar Usuário
                             </>
                         )}
-                    </button>
+                    </Button>
                 </div>
             </form>
         </Modal>

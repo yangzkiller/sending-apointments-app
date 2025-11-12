@@ -67,7 +67,7 @@ export default function ChangePasswordModal({ isOpen, onClose }) {
             isOpen={isOpen}
             onClose={resetModal}
             title="Mudar Senha"
-            className="md:!h-90"
+            className="max-w-3xl"
         >
             {errors.general && (
                 <p className="text-red-500 text-sm text-center mb-4">{errors.general}</p>
@@ -111,7 +111,7 @@ export default function ChangePasswordModal({ isOpen, onClose }) {
                     disabled={loading}
                 />
 
-                <Button type="submit" disabled={loading} className="w-full">
+                <Button type="submit" disabled={loading} className="w-full px-6 py-2.5 rounded-xl bg-[#1383be] hover:bg-[#0e6da0] text-white">
                     {loading ? "ALTERANDO..." : "ALTERAR SENHA"}
                 </Button>
             </form>

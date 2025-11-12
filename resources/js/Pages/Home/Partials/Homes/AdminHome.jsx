@@ -42,8 +42,8 @@ export default function AdminHome() {
             title: "Criar Usuário",
             description: "Adicione novos usuários ao sistema",
             icon: UserPlus,
-            color: "from-blue-700 to-indigo-800",
-            hoverColor: "hover:from-blue-600 hover:to-indigo-700",
+            color: "from-relative p-6 bg-gradient-to-r from-blue-900 via-gray-850 to-light-black text-white rounded-t-2xl border-b border-blue-800",
+            hoverColor: "hover:from-cyan-600 hover:to-blue-700",
             stats: "Adicionar",
             action: () => setIsCreateUserModalOpen(true),
             disabled: false,
@@ -79,7 +79,7 @@ export default function AdminHome() {
                                 group border border-slate-700
                             `}
                         >
-                            {/* Gradient Background */}
+                            {/* Gradient Background*/}
                             <div className={`
                                 absolute inset-0 bg-gradient-to-br ${card.color}
                                 ${!card.disabled && card.hoverColor}
@@ -107,12 +107,6 @@ export default function AdminHome() {
                                     {card.description}
                                 </p>
 
-                                {card.disabled && (
-                                    <div className="mt-4 flex items-center gap-2 text-sm font-medium text-white/60">
-                                        <div className="w-2 h-2 bg-white/40 rounded-full animate-pulse" />
-                                        <span>Funcionalidade em desenvolvimento</span>
-                                    </div>
-                                )}
                             </div>
                         </button>
                     );
@@ -126,6 +120,7 @@ export default function AdminHome() {
             />
 
             <InstitutionListModal
+                key={`institution-modal-${isInstitutionModalOpen}`}
                 isOpen={isInstitutionModalOpen}
                 onClose={() => setIsInstitutionModalOpen(false)}
             />

@@ -4,6 +4,8 @@ import { toast } from "react-toastify";
 import api from "@/axios";
 import { route } from "ziggy-js";
 import Modal from "@/Components/Generals/Modal";
+import FormField from "@/Components/Generals/FormField";
+import Button from "@/Components/Generals/Button";
 
 export default function CreateInstitutionModal({ isOpen, onClose, onInstitutionCreated }) {
     const [loading, setLoading] = useState(false);
@@ -69,24 +71,24 @@ export default function CreateInstitutionModal({ isOpen, onClose, onInstitutionC
             onClose={handleClose}
             title="Criar Nova Instituição"
             className="max-w-2xl"
-            maxHeight="max-h-[85vh]"
+            maxHeight="max-h-[80vh]"
         >
             <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                    <label className="flex items-center gap-2 text-sm font-medium text-gray-200">
-                        <Building2 className="w-4 h-4 text-cyan-400" />
-                        Nome da Instituição
-                    </label>
-                    <input
-                        type="text"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        required
-                        className="w-full px-4 py-2.5 bg-slate-800/50 border border-slate-600/50 rounded-xl text-white placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all text-sm"
-                        placeholder="Digite o nome da instituição"
-                    />
-                </div>
+                <FormField
+                    label="Nome da Instituição"
+                    icon={<Building2 className="w-4 h-4" />}
+                    type="text"
+                    value={formData.name}
+                    onChange={(e) => setFormData((prev) => ({
+                        ...prev,
+                        name: e.target.value.toUpperCase()
+                    }))}
+                    labelClassName="text-gray-200 text-sm font-medium"
+                    iconClassName="text-cyan-400"
+                    inputClassName="bg-slate-800/50 border-slate-600/50 rounded-xl text-sm hover:border-blue-400/50"
+                    placeholder="Digite o nome da instituição"
+                    required
+                />
 
                 <div className="p-4 bg-gradient-to-r from-cyan-900/30 to-blue-900/30 rounded-xl border border-cyan-500/30">
                     <div className="flex items-start gap-3">
@@ -112,10 +114,10 @@ export default function CreateInstitutionModal({ isOpen, onClose, onInstitutionC
                     >
                         Cancelar
                     </button>
-                    <button
+                    <Button
                         type="submit"
                         disabled={loading}
-                        className="flex-1 px-6 py-2.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-xl transition-all font-medium shadow-lg shadow-cyan-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
+                        className="flex-1 w-full px-6 py-2.5 rounded-xl bg-[#1383be] hover:bg-[#0e6da0] text-white text-sm"
                     >
                         {loading ? (
                             <>
@@ -124,11 +126,10 @@ export default function CreateInstitutionModal({ isOpen, onClose, onInstitutionC
                             </>
                         ) : (
                             <>
-                                <Plus className="w-5 h-5" />
                                 Criar Instituição
                             </>
                         )}
-                    </button>
+                    </Button>
                 </div>
             </form>
         </Modal>
