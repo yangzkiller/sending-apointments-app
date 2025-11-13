@@ -77,7 +77,7 @@ export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) 
                 email: formData.email,
                 role: parseInt(formData.role),
                 active: formData.active ? 1 : 0,
-                // Apenas envia instituição se for SENDER (role = 0)
+                // Only send institution if it is SENDER (role = 0)
                 id_institution: parseInt(formData.role) === 0 ? (formData.id_institution || null) : null,
             };
 
@@ -241,7 +241,6 @@ export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) 
 
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {/* Role */}
                     <div className="space-y-1">
                         <label className="flex items-center gap-2 text-sm font-medium text-gray-200">
                             <Shield className="w-4 h-4 text-cyan-400" />
@@ -252,7 +251,7 @@ export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) 
                             value={formData.role}
                             onChange={handleChange}
                             required
-                            className="w-full bg-slate-700 border border-slate-600 rounded-xl max-h-[140px] overflow-y-auto shadow-lg"
+                            className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-xl text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm appearance-none cursor-pointer hover:border-blue-400/50"
                         >
                             <option value={0}>Remetente</option>
                             <option value={1}>Destinatário</option>
